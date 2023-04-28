@@ -19,7 +19,10 @@ class Photo(models.Model):
 
 
 class Review(models.Model):
+    point = zip(range(1, 6), range(1, 6))
+
     place = models.ForeignKey(Place, on_delete=models.CASCADE)
     user = models.ForeignKey(User, on_delete=models.CASCADE)
     content = models.CharField(max_length=300, blank=True, null=True)
     like = models.ManyToManyField(User, related_name='like_reviews')
+    star = models.IntegerField(choices=point)
