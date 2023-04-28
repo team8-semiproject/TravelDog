@@ -1,15 +1,15 @@
 from django.db import models
 from django.contrib.auth.hashers import make_password
 from django.apps import apps
-from django.contrib.auth.base_user import AbstractBaseUser, BaseUserManager
+from django.contrib.auth import base_user as auth_models
 from django.contrib.auth.validators import UnicodeUsernameValidator
 from django.utils.translation import gettext_lazy as _
 
 
 # Create your models here.
 
-class UserManager(BaseUserManager):
-    def create_user(self, username, password=None):
+class UserManager(auth_models.BaseUserManager):
+    def create_user(self, username: str, password: str=None, is_active=False, is_admin=False):
         """
         Create and save a user with the given username and password.
         """
@@ -18,8 +18,9 @@ class UserManager(BaseUserManager):
 
         GlobalUserModel = apps.get_model(self.model._meta.app_label, self.model._meta.object_name)
         username = GlobalUserModel.normalize_username(username)
+
         user = self.model(username=username)
-        user.password = make_password(password)
+        user.set_password(password)
         user.save(using=self._db)
         return user
 
@@ -32,7 +33,7 @@ class UserManager(BaseUserManager):
         user.save(using=self._db)
         return user
     
-class User(AbstractBaseUser):
+class User(auth_models.AbstractBaseUser):
 
     username_validator = UnicodeUsernameValidator()
 
@@ -57,13 +58,3 @@ class User(AbstractBaseUser):
 
     def __str__(self):
         return self.username
-
-    def has_perm(self, perm, obj=None):
-        return True
-
-    def has_module_perms(self, app_label):
-        return True
-
-    @property
-    def is_staff(self):
-        return self.is_admin
