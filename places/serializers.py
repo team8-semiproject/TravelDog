@@ -3,10 +3,10 @@ from .models import Place, Photo, Review
 
 
 class PhotoSerializer(serializers.ModelSerializer):
-    photos = serializers.ImageField(use_url=True)
+    photo = serializers.ImageField(use_url=True)
     class Meta:
         model = Photo
-        fields = ('photos',)
+        fields = ('photo',)
 
 
 class PlaceListSerializer(serializers.ModelSerializer):
@@ -16,7 +16,7 @@ class PlaceListSerializer(serializers.ModelSerializer):
 
 
 class PlaceSerializer(serializers.ModelSerializer):
-    photos = serializers.SerializerMethodField()
+    photo = serializers.SerializerMethodField()
 
     class PlaceReviewSerializer(serializers.ModelSerializer):
         class Meta:
@@ -26,18 +26,18 @@ class PlaceSerializer(serializers.ModelSerializer):
     review_set = PlaceReviewSerializer(many=True, read_only=True)
     review_count = serializers.IntegerField(source='review_set.count', read_only=True)
 
-    def get_photos(self, object):
+    def get_photo(self, object):
         photo = object.photos.all()
         return PhotoSerializer(instance=photo, many=True, context=self.context).data
 
     class Meta:
         model = Place
-        fields = ('name', 'address', 'photos',)
+        fields = ('name', 'address', 'photo', 'review_set', 'review_count',)
     
     def create(self, validated_data):
         instance = Place.objects.create(**validated_data)
         photo_set = self.context['request'].FILES
-        for photo_data in photo_set.getlist('photos'):
+        for photo_data in photo_set.getlist('photo'):
             Photo.objects.create(diary=instance, photo=photo_data)
         return instance
 
