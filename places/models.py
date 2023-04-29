@@ -1,5 +1,5 @@
 from django.db import models
-from accounts import User
+from accounts.models import User
 
 
 class Place(models.Model):
@@ -9,6 +9,9 @@ class Place(models.Model):
     longtitude = models.FloatField()
     bookmark = models.ManyToManyField(User, related_name='bookmarked_places')
 
+    def __str__(self):
+        return str(self.name)
+
 
 class Photo(models.Model):
     def photo_path(instance, filename):
@@ -16,6 +19,9 @@ class Photo(models.Model):
 
     place = models.ForeignKey(Place, on_delete=models.CASCADE, related_name='photos')
     photo = models.ImageField(upload_to=photo_path)
+
+    def __str__(self):
+        return str(self.place)
 
 
 class Review(models.Model):
@@ -26,3 +32,6 @@ class Review(models.Model):
     content = models.CharField(max_length=300, blank=True, null=True)
     like = models.ManyToManyField(User, related_name='like_reviews')
     star = models.IntegerField(choices=point)
+
+    def __str__(self):
+        return str(self.place) + ' - ' + str(self.user)
