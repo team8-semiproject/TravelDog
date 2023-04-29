@@ -1,10 +1,10 @@
+from django.contrib.auth.decorators import login_required
+from django.shortcuts import get_list_or_404, get_object_or_404
+from .models import Place, Review
+from .serializers import PlaceListSerializer, PlaceSerializer, ReviewListSerializer, ReviewSerializer
 from rest_framework import status
 from rest_framework.response import Response
 from rest_framework.decorators import api_view
-from .serializers import PlaceListSerializer, PlaceSerializer, ReviewListSerializer, ReviewSerializer
-from django.contrib.auth.decorators import login_required
-from django.shortcuts import get_list_or_404, get_object_or_404
-from .models import Place, Photo, Review
 
 
 @api_view(['GET', 'POST'])
@@ -56,7 +56,7 @@ def review_list(request, place_pk):
                 serializer.save(place=place)
                 return Response(data=serializer.data, status=status.HTTP_201_CREATED)
     else:
-        return login_required()
+        return Response(status=status.HTTP_401_UNAUTHORIZED)
 
 
 @api_view(['GET', 'DELETE', 'PUT'])
