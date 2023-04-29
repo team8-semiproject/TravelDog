@@ -26,8 +26,8 @@ class PlaceSerializer(serializers.ModelSerializer):
     review_set = PlaceReviewSerializer(many=True, read_only=True)
     review_count = serializers.IntegerField(source='review_set.count', read_only=True)
 
-    def get_photo(self, object):
-        photo = object.photos.all()
+    def get_photo(self, obj):
+        photo = obj.photos.all()
         return PhotoSerializer(instance=photo, many=True, context=self.context).data
 
     class Meta:
@@ -38,7 +38,7 @@ class PlaceSerializer(serializers.ModelSerializer):
         instance = Place.objects.create(**validated_data)
         photo_set = self.context['request'].FILES
         for photo_data in photo_set.getlist('photo'):
-            Photo.objects.create(diary=instance, photo=photo_data)
+            Photo.objects.create(place=instance, photo=photo_data)
         return instance
 
 
