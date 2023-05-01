@@ -3,52 +3,28 @@ from .models import Place, Photo, Review
 
 
 class PhotoSerializer(serializers.ModelSerializer):
-    photo = serializers.ImageField(use_url=True)
     class Meta:
         model = Photo
         fields = ('photo',)
 
 
-class PlaceListSerializer(serializers.ModelSerializer):
-    class Meta:
-        model = Place
-        fields = '__all__'
-
-
 class PlaceSerializer(serializers.ModelSerializer):
-    photo = serializers.SerializerMethodField()
-
-    class PlaceReviewSerializer(serializers.ModelSerializer):
-        class Meta:
-            model = Review
-            fields = '__all__'
-
-    review_set = PlaceReviewSerializer(many=True, read_only=True)
-    review_count = serializers.IntegerField(source='review_set.count', read_only=True)
-
-    def get_photo(self, obj):
-        photo = obj.photos.all()
-        return PhotoSerializer(instance=photo, many=True, context=self.context).data
+    photos = PhotoSerializer(many=True, read_only=True)
 
     class Meta:
         model = Place
-        fields = ('name', 'address', 'photo', 'review_set', 'review_count',)
-    
+        fields = ('pk', 'name', 'address', 'latitude', 'longtitude', 'photos',)
+
     def create(self, validated_data):
-        instance = Place.objects.create(**validated_data)
-        photo_set = self.context['request'].FILES
-        for photo_data in photo_set.getlist('photo'):
-            Photo.objects.create(place=instance, photo=photo_data)
-        return instance
-
-
-class ReviewListSerializer(serializers.ModelSerializer):
-    class Meta:
-        model = Review
-        fields = '__all__'
+        photos_data = self.context['request'].FILES
+        place = Place.objects.create(**validated_data)
+        for photo_data in photos_data.getlist('photo'):
+            Photo.objects.create(place=place, photo=photo_data)
+        return place
 
 
 class ReviewSerializer(serializers.ModelSerializer):
+    user = serializers.ReadOnlyField(source = 'user.username')
     class Meta:
         model = Review
         fields = '__all__'

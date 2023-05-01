@@ -27,8 +27,8 @@ class Photo(models.Model):
 class Review(models.Model):
     point = zip(range(1, 6), range(1, 6))
 
-    place = models.ForeignKey(Place, on_delete=models.CASCADE)
-    user = models.ForeignKey(User, on_delete=models.CASCADE)
+    place = models.ForeignKey(Place, on_delete=models.CASCADE, related_name='place_reviews')
+    user = models.ForeignKey(User, on_delete=models.CASCADE, related_name='user_reviews')
     content = models.CharField(max_length=300, blank=True, null=True)
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
