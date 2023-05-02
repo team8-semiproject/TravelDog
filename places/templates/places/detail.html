@@ -1,0 +1,248 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<div id="default-carousel" class="relative w-full" data-carousel="slide">
+  <!-- Carousel wrapper -->
+  <div class="relative h-56 overflow-hidden md:h-96">
+       <!-- Item 1 -->
+      <div class="hidden duration-700 ease-in-out" data-carousel-item>
+          <img src="https://cdn.visitkorea.or.kr/img/call?cmd=VIEW&id=cf325192-7620-4194-a6bd-8fa4fcbed287" class="absolute block w-full -translate-x-1/2 -translate-y-1/2 top-1/2 left-1/2" alt="...">
+      </div>
+      <!-- Item 2 -->
+      <div class="hidden duration-700 ease-in-out" data-carousel-item>
+          <img src="https://cdn.visitkorea.or.kr/img/call?cmd=VIEW&id=57ac97a8-199c-45cd-be72-dd301fcaa4b0" class="absolute block w-full -translate-x-1/2 -translate-y-1/2 top-1/2 left-1/2" alt="...">
+      </div>
+  </div>
+  <!-- Slider indicators -->
+  <div class="absolute z-30 flex space-x-3 -translate-x-1/2 bottom-5 left-1/2">
+      <button type="button" class="w-3 h-3 rounded-full" aria-current="true" aria-label="Slide 1" data-carousel-slide-to="0"></button>
+      <button type="button" class="w-3 h-3 rounded-full" aria-current="false" aria-label="Slide 2" data-carousel-slide-to="1"></button>
+  </div>
+  <!-- Slider controls -->
+  <button type="button" class="absolute top-0 left-0 z-30 flex items-center justify-center h-full px-4 cursor-pointer group focus:outline-none" data-carousel-prev>
+      <span class="inline-flex items-center justify-center w-8 h-8 rounded-full sm:w-10 sm:h-10 bg-white/30 dark:bg-gray-800/30 group-hover:bg-white/50 dark:group-hover:bg-gray-800/60 group-focus:ring-4 group-focus:ring-white dark:group-focus:ring-gray-800/70 group-focus:outline-none">
+          <svg aria-hidden="true" class="w-5 h-5 text-white sm:w-6 sm:h-6 dark:text-gray-800" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7"></path></svg>
+          <span class="sr-only">Previous</span>
+      </span>
+  </button>
+  <button type="button" class="absolute top-0 right-0 z-30 flex items-center justify-center h-full px-4 cursor-pointer group focus:outline-none" data-carousel-next>
+      <span class="inline-flex items-center justify-center w-8 h-8 rounded-full sm:w-10 sm:h-10 bg-white/30 dark:bg-gray-800/30 group-hover:bg-white/50 dark:group-hover:bg-gray-800/60 group-focus:ring-4 group-focus:ring-white dark:group-focus:ring-gray-800/70 group-focus:outline-none">
+          <svg aria-hidden="true" class="w-5 h-5 text-white sm:w-6 sm:h-6 dark:text-gray-800" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"></path></svg>
+          <span class="sr-only">Next</span>
+      </span>
+  </button>
+</div>
+<div class="bg-white">
+  <div class="mx-auto grid max-w-2xl grid-cols-1 items-center gap-x-8 gap-y-16 px-4 pb-24 pt-4 sm:px-6 sm:pb-32 sm:pt-20 lg:max-w-7xl lg:grid-cols-2 lg:px-8">
+    <div>
+      <h2 class="text-3xl font-bold tracking-tight text-gray-900 sm:text-4xl">혼자두면장판뜯어서차린개카페</h2>
+      <div class="flex gap-2 mt-4">
+        <i class="fa-solid fa-location-dot text-primary-700 mt-1"></i>
+        <p class="text-gray-500">서울특별시 관악구 남부순환로 1665 (남부순환로)</p>
+      </div>
+      <div class="flex gap-0.5 mt-4">
+        <i class="fa-solid fa-star text-amber-400 my-auto"></i>
+        <i class="fa-solid fa-star text-amber-400 my-auto"></i>
+        <i class="fa-solid fa-star text-amber-400 my-auto"></i>
+        <i class="fa-solid fa-star text-amber-400 my-auto"></i>
+        <i class="fa-solid fa-star text-slate-300 my-auto"></i>
+        <span class="text-base text-gray-500 ms-1">4.0</span>
+      </div>
+      <div class="w-full h-56 mt-4 rounded map-wrapper lg:hidden">
+        <div id="map"></div>
+      </div>
+      <h3 class="text-base font-bold tracking-tight text-gray-700 sm:text-lg mt-8 mb-4">댓글(20)</h3>
+      <div class="mb-12">
+        <div class="flex items-center gap-x-4 mb-4">
+          <img class="h-12 w-12 rounded-full" src="https://images.unsplash.com/photo-1494790108377-be9c29b29330?ixlib=rb-1.2.1&ixid=eyJhcHBfaWQiOjEyMDd9&auto=format&fit=facearea&facepad=2&w=256&h=256&q=80" alt="">
+          <div>
+            <h3 class="text-base font-semibold leading-7 tracking-tight text-gray-900">Leslie Alexander</h3>
+            <time class="text-sm leading-6 text-gray-500" datetime="2023-04-29">
+          </div>
+        </div>
+        <p class="text-base text-gray-900 mb-4">수도권에서 가까운 곳 중 댕댕이와 함께 이만한곳 없죠. 반려견과 안심하고 산책하세요</p>
+        {% if request.user.is_authenticated %}
+        <form id="#" data-comment-id="#" data-post-id="#">
+        {% csrf_token %}
+        {% if request.user in comment.like_users.all %}
+          <button type="submit" class="p-0 text-primary-700"><i class="fa-solid fa-heart"></i></button>
+        {% else %}
+          <button type="submit" class="p-0 text-gray-500"><i class="fa-regular fa-heart"></i></button>
+        {% endif %}
+        {% else %}
+            <button type="submit" class="p-0 text-gray-500" disabled="disabled"><i class="fa-regular fa-heart"></i></button> 
+        {% endif %}
+          {% comment %} <span class="">{{ comment.like_users.count }}</span> {% endcomment %}
+          <span class="text-gray-500">2</span>
+        </form>
+      </div>
+      <div class="mb-12">
+        <div class="flex items-center gap-x-4 mb-4">
+          <img class="h-12 w-12 rounded-full" src="https://images.unsplash.com/photo-1494790108377-be9c29b29330?ixlib=rb-1.2.1&ixid=eyJhcHBfaWQiOjEyMDd9&auto=format&fit=facearea&facepad=2&w=256&h=256&q=80" alt="">
+          <div>
+            <h3 class="text-base font-semibold leading-7 tracking-tight text-gray-900">Leslie Alexander</h3>
+            <time class="text-sm leading-6 text-gray-500" datetime="2023-04-30">
+          </div>
+        </div>
+        <p class="text-base text-gray-900 mb-4">수도권에서 가까운 곳 중 댕댕이와 함께 이만한곳 없죠. 반려견과 안심하고 산책하세요</p>
+        {% if request.user.is_authenticated %}
+        <form id="#" data-comment-id="#" data-post-id="#">
+        {% csrf_token %}
+        {% if request.user in comment.like_users.all %}
+          <button type="submit" class="p-0 text-primary-700"><i class="fa-solid fa-heart"></i></button>
+        {% else %}
+          <button type="submit" class="p-0 text-gray-500"><i class="fa-regular fa-heart"></i></button>
+        {% endif %}
+        {% else %}
+            <button type="submit" class="p-0 text-gray-500" disabled="disabled"><i class="fa-regular fa-heart"></i></button> 
+        {% endif %}
+          {% comment %} <span class="">{{ comment.like_users.count }}</span> {% endcomment %}
+          <span class="text-gray-500">2</span>
+        </form>
+      </div>
+
+      <nav aria-label="Page navigation example" class="flex justify-center mt-20">
+        <ul class="inline-flex items-center -space-x-px">
+          <li>
+            <a href="#" class="block px-3 py-2 ml-0 leading-tight text-gray-500 bg-white border border-gray-300 rounded-l-lg hover:bg-gray-100 hover:text-gray-700 dark:bg-gray-800 dark:border-gray-700 dark:text-gray-400 dark:hover:bg-gray-700 dark:hover:text-white">
+              <span class="sr-only">Previous</span>
+              <svg aria-hidden="true" class="w-5 h-5" fill="currentColor" viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg"><path fill-rule="evenodd" d="M12.707 5.293a1 1 0 010 1.414L9.414 10l3.293 3.293a1 1 0 01-1.414 1.414l-4-4a1 1 0 010-1.414l4-4a1 1 0 011.414 0z" clip-rule="evenodd"></path></svg>
+            </a>
+          </li>
+          <li>
+            <a href="#" class="px-3 py-2 leading-tight text-gray-500 bg-white border border-gray-300 hover:bg-gray-100 hover:text-gray-700 dark:bg-gray-800 dark:border-gray-700 dark:text-gray-400 dark:hover:bg-gray-700 dark:hover:text-white">1</a>
+          </li>
+          <li>
+            <a href="#" class="px-3 py-2 leading-tight text-gray-500 bg-white border border-gray-300 hover:bg-gray-100 hover:text-gray-700 dark:bg-gray-800 dark:border-gray-700 dark:text-gray-400 dark:hover:bg-gray-700 dark:hover:text-white">2</a>
+          </li>
+          <li>
+            <a href="#" aria-current="page" class="z-10 px-3 py-2 leading-tight text-blue-600 border border-blue-300 bg-blue-50 hover:bg-blue-100 hover:text-blue-700 dark:border-gray-700 dark:bg-gray-700 dark:text-white">3</a>
+          </li>
+          <li>
+            <a href="#" class="px-3 py-2 leading-tight text-gray-500 bg-white border border-gray-300 hover:bg-gray-100 hover:text-gray-700 dark:bg-gray-800 dark:border-gray-700 dark:text-gray-400 dark:hover:bg-gray-700 dark:hover:text-white">4</a>
+          </li>
+          <li>
+            <a href="#" class="px-3 py-2 leading-tight text-gray-500 bg-white border border-gray-300 hover:bg-gray-100 hover:text-gray-700 dark:bg-gray-800 dark:border-gray-700 dark:text-gray-400 dark:hover:bg-gray-700 dark:hover:text-white">5</a>
+          </li>
+          <li>
+            <a href="#" class="block px-3 py-2 leading-tight text-gray-500 bg-white border border-gray-300 rounded-r-lg hover:bg-gray-100 hover:text-gray-700 dark:bg-gray-800 dark:border-gray-700 dark:text-gray-400 dark:hover:bg-gray-700 dark:hover:text-white">
+              <span class="sr-only">Next</span>
+              <svg aria-hidden="true" class="w-5 h-5" fill="currentColor" viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg"><path fill-rule="evenodd" d="M7.293 14.707a1 1 0 010-1.414L10.586 10 7.293 6.707a1 1 0 011.414-1.414l4 4a1 1 0 010 1.414l-4 4a1 1 0 01-1.414 0z" clip-rule="evenodd"></path></svg>
+            </a>
+          </li>
+        </ul>
+      </nav>
+
+    </div>
+    <div class="hidden lg:flex flex-col relative h-full">
+      <div class="sticky top-10 rounded-xl shadow-xl pt-6">
+        <h2 class="text-xl font-bold tracking-tight text-gray-900 sm:text-lg mx-2">'혼자두면장판뜯어서차린개카페'위치</h2>
+        <p class="text-gray-500 mt-2 mx-2">서울특별시 관악구 남부순환로 1665 (남부순환로)</p>
+        <div class="h-56 map-wrapper mt-6">
+          <div id="map-right" class="h-full"></div>
+        </div>
+        <button type="submit" class="flex items-center justify-center gap-2 text-gray-800 dark:text-white hover:bg-gray-50 font-medium text-base px-4 lg:px-5 py-2 lg:py-2.5 mr-2 dark:hover:bg-gray-700 focus:outline-none dark:focus:ring-gray-800 w-full border-t-2 border-gray-100">
+          <i class="fa-regular fa-bookmark text-gray-500"></i>
+          <span>장소 저장하기</span>
+        </button>
+      </div>
+ 
+      <div class="grow"></div>
+    </div>
+  </div>
+</div>
+<div class="lg:hidden bg-white fixed bottom-0 w-full z-10	">
+  <button type="submit" class="flex items-center justify-center gap-2 text-gray-800 dark:text-white hover:bg-gray-50 font-medium text-base py-4 dark:hover:bg-gray-700 focus:outline-none dark:focus:ring-gray-800 w-full border-t-2 border-gray-100">
+    <i class="fa-regular fa-bookmark text-gray-500"></i>
+    <span>장소 저장하기</span>
+  </button>
+</div>
+{% endblock content %}
+
+{% block js %}
+<script type="text/javascript" src="//dapi.kakao.com/v2/maps/sdk.js?appkey=0c2e7f90fd6d72041910f22b2784a9a1&libraries=LIBRARY"></script>
+<script>
+  const container = document.getElementById('map');
+  const containerRight = document.getElementById('map-right');
+  const options = {
+    center: new kakao.maps.LatLng(37.485334478647, 126.93590768893),
+    level: 3
+  };
+
+  let map = new kakao.maps.Map(container, options);
+  let mapRight = new kakao.maps.Map(containerRight, options);
+  let markerPosition  = new kakao.maps.LatLng(37.485334478647, 126.93590768893); 
+
+  // 마커를 생성합니다
+  let marker = new kakao.maps.Marker({
+      position: markerPosition
+  });
+
+  let markerRight = new kakao.maps.Marker({
+      position: markerPosition
+  });
+
+  map.setZoomable(false);  
+  mapRight.setZoomable(false)
+
+  // 마커가 지도 위에 표시되도록 설정합니다
+  marker.setMap(map);
+  markerRight.setMap(mapRight);
+
+  window.addEventListener("resize", function() {
+    // window resize시 처리
+    map = new kakao.maps.Map(container, options);
+    mapRight = new kakao.maps.Map(containerRight, options);
+    markerPosition  = new kakao.maps.LatLng(37.485334478647, 126.93590768893); 
+
+    // 마커를 생성합니다
+    marker = new kakao.maps.Marker({
+        position: markerPosition
+    });
+    markerRight = new kakao.maps.Marker({
+        position: markerPosition
+    });
+
+    // 마우스 휠로 지도 확대,축소 가능여부를 설정합니다
+    map.setZoomable(false);    
+    mapRight.setZoomable(false);    
+    // 마커가 지도 위에 표시되도록 설정합니다
+    marker.setMap(map);
+    markerRight.setMap(mapRight);
+  })
+</script>
+<script>
+  function elapsedTime(date) {
+    const start = new Date(date);
+    const end = new Date();
+  
+    const diff = (end - start) / 1000;
+    
+    const times = [
+      { name: '년', milliSeconds: 60 * 60 * 24 * 365 },
+      { name: '개월', milliSeconds: 60 * 60 * 24 * 30 },
+      { name: '일', milliSeconds: 60 * 60 * 24 },
+      { name: '시간', milliSeconds: 60 * 60 },
+      { name: '분', milliSeconds: 60 },
+    ];
+  
+    for (const value of times) {
+      const betweenTime = Math.floor(diff / value.milliSeconds);
+  
+      if (betweenTime > 0) {
+        return `${betweenTime}${value.name} 전`;
+      }
+    }
+    return '방금 전';
+  }
+
+  let times = document.querySelectorAll('time')
+  times.forEach( el => {
+    el.innerHTML = elapsedTime(el.dateTime)
+  });
+  
+
+
+  
+</script>
+{% endblock js %}
