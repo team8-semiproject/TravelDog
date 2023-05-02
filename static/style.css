@@ -1,0 +1,30 @@
+.map-wrapper {
+  width: 100%;
+  position: relative;
+}
+
+.map-wrapper::after {
+  display: block;
+  content: "";
+  padding-bottom: 14rem;
+}
+
+.map-wrapper #map {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  border-radius: 0.25rem;
+}
+
+.map-wrapper #map-right {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  border-radius: 0.25rem;
+}
