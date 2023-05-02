@@ -15,7 +15,7 @@ class Place(models.Model):
 
 class Photo(models.Model):
     def photo_path(instance, filename):
-        return f'places/{instance.place.name}/{filename}'
+        return f'places/{instance.place.pk}/{filename}'
 
     place = models.ForeignKey(Place, on_delete=models.CASCADE, related_name='photos')
     photo = models.ImageField(upload_to=photo_path)
