@@ -25,8 +25,8 @@ def signup(request):
         if form.is_valid():
             user = form.save()
             auth_login(request, user)
-            # return redirect('places:index')
-            return redirect('places:places-list')
+            return redirect('places:index')
+            # return redirect('places:places-list')
     else:
         form = UserCreationForm()
     context = {
@@ -41,7 +41,8 @@ def login(request):
         print("request", request.POST)
         if form.is_valid():
             auth_login(request, form.get_user())
-            return redirect('places:places-list')
+            return redirect('places:index')
+            # return redirect('places:places-list')
     else:
         form = AuthenticationForm()
     context = {
@@ -53,8 +54,8 @@ def login(request):
 @login_required
 def logout(request):
     auth_logout(request)
-    # return redirect('places:index')
-    return redirect('places:places-list')
+    return redirect('places:index')
+    # return redirect('places:places-list')
 
 
 def profile(request, username):
