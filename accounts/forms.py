@@ -4,9 +4,10 @@ from django import forms
 from django.utils.translation import gettext, gettext_lazy as _
 
 class CustomUserCreationForm(UserCreationForm):
-    class Meta(UserCreationForm.Meta):
+    class Meta:
         model = get_user_model()
-        fields = '__all__'
+        fields = ("username",)
+        field_classes = {'username': UsernameField}
 
 class CustomUserChangeForm(UserChangeForm):
     class Meta(UserChangeForm.Meta):
@@ -33,10 +34,8 @@ class CustomAuthenticationForm(AuthenticationForm):
             ),
         )
 
-
 class CustomPasswordChangeForm(PasswordChangeForm):
     pass
-
 
 """
 from accounts.forms import CustomAuthenticationForm as AForm
