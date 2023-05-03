@@ -17,4 +17,4 @@ class PhotoForm(forms.ModelForm):
 class ReviewForm(forms.ModelForm):
     class Meta:
         model = Review
-        fields = '__all__'
+        fields = ('content', 'star',)
