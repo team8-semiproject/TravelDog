@@ -20,8 +20,10 @@ from django.http import JsonResponse
 # Create your views here.
 
 def signup(request):
+
     if request.method == "POST":
-        form = UserCreationForm(request, data=request.POST)
+        print("request", request.POST)
+        form = UserCreationForm(data=request.POST)
         if form.is_valid():
             user = form.save()
             auth_login(request, user)
@@ -38,7 +40,6 @@ def signup(request):
 def login(request):
     if request.method == 'POST':
         form = AuthenticationForm(request, data=request.POST)
-        print("request", request.POST)
         if form.is_valid():
             auth_login(request, form.get_user())
             return redirect('places:index')
@@ -84,7 +85,8 @@ def update(request):
 @login_required
 def password(request):
     if request.method == 'POST':
-        form = PasswordChangeForm(request.user, request.POST)
+        form = PasswordChangeForm(user=request.user, data=request.POST)
+        print(form.is_valid())
         if form.is_valid():
             user = form.save()
             update_session_auth_hash(request, user)
