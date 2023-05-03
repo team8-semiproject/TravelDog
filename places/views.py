@@ -1,85 +1,111 @@
-from django.shortcuts import redirect
-from rest_framework.renderers import TemplateHTMLRenderer
-from rest_framework.response import Response
-from rest_framework.viewsets import ModelViewSet
-from .models import Place, Review
-from .permissions import IsOwnerOrReadOnly, IsAdminOrReadOnly
-from .serializers import PlaceSerializer, ReviewSerializer
+from django.contrib.auth.decorators import login_required
+from django.forms import modelformset_factory
+from django.shortcuts import redirect, render, get_list_or_404, get_object_or_404
+from django.utils.decorators import method_decorator
+from django.views import View
+from .forms import PlaceForm, PhotoForm, ReviewForm
+from .models import Place, Photo, Review
 
 
-class PlaceViewSet(ModelViewSet):
-    permission_classes = [IsAdminOrReadOnly]
-    renderer_classes = [TemplateHTMLRenderer]
+class PlaceListView(View):
+    def get(self, request):
+        places = get_list_or_404(Place)
+        context = {
+            'places': places,
+        }
+        return render(request, 'places/index.html', context)
 
 
-    def list(self, request):
-        places = Place.objects.all()
-        return Response({'places': places}, template_name='places/index.html')
+class PlaceDetailView(View):
+    def get(self, request, place_pk):
+        place = get_object_or_404(Place, pk=place_pk)
+        context = {
+            'place': place,
+        }
+        return render(request, 'places/detail.html', context)
 
 
-    def retrieve(self, request, pk):
-        place = Place.objects.get(pk=pk)
-        return Response({'place': place}, template_name='places/detail.html')
+    def delete(self, request, place_pk):
+        if request.user.is_superuser or request.user.is_staff:
+            place = get_object_or_404(Place, pk=place_pk)
+            place.delete()
+            return redirect('places:index')
+        return redirect('places:detail', place_pk)
 
 
-    def create(self, request):
-        serializer = PlaceSerializer(data=request.data)
-        if not serializer.is_valid():
-            return Response({'serializer': serializer})
-        place = serializer.save()
-        return redirect('places:detail', place.pk)
+class Review(View):
+    @method_decorator(login_required)
+    def post(self, request, place_pk):
+        place = get_object_or_404(Place, pk=place_pk)
+        form = ReviewForm(request.POST)
+        if form.is_valid():
+            review = form.save(commit = False)
+            review.place = place
+            review.user = request.user
+            review.save()
+            return redirect('places:detail', place_pk)
+        context = {
+            'review': review,
+            'form': form,
+        }
+        return render(request, 'places/detail.html', context)
+    
+
+    def delete(self, request, place_pk, review_pk):
+        review = get_object_or_404(Review, pk=review_pk)
+        if review.user == request.user:
+            review.delete()
+        return redirect('places:detail', place_pk)
 
 
-    def update(self, request, pk):
-        place = Place.objects.get(pk=pk)
-        serializer = PlaceSerializer(place, data=request.data)
-        if not serializer.is_valid():
-            return Response({'serializer': serializer, 'place': place})
-        serializer.save()
-        return redirect('places:detail', pk)
+def create(request):
+    if request.user.is_staff:
+        PhotoFormSet = modelformset_factory(Photo, form=PhotoForm, extra=3)
+
+        if request.method == 'POST':
+            form = PlaceForm(request.POST)
+            formset = PhotoFormSet(request.POST, request.FILES, queryset=Photo.objects.none())
+
+            if form.is_valid() and formset.is_valid():
+                place = form.save()
+                for photoform in formset.cleaned_data:
+                    if photoform:
+                        photo = Photo(place=place, photo=photoform['photo'])
+                        photo.save()
+                return redirect('places:index')
+        else:
+            form = PlaceForm()
+            formset = PhotoFormSet(queryset=Photo.objects.none())
+        context = {
+            'form': form,
+            'formset': formset,
+        }
+        return render(request, 'places/create.html', context)
+    return redirect('places:index')
 
 
-    def destroy(self, request, pk):
-        place = Place.objects.get(pk=pk)
-        place.delete()
-        return redirect('places:index')
+def update(request, place_pk):
+    if request.user.is_staff:
+        PhotoFormSet = modelformset_factory(Photo, form=PhotoForm, extra=3)
+        place = get_object_or_404(Place, pk=place_pk)
 
+        if request.method == 'POST':
+            form = PlaceForm(request.POST, instance=request.data)
+            formset = PhotoFormSet(request.POST, request.FILES, queryset=Photo.objects.filter(place=place))
 
-class ReviewViewSet(ModelViewSet):
-    permission_classes = [IsOwnerOrReadOnly]
-    renderer_classes = [TemplateHTMLRenderer]
-
-
-    def list(self, request, pk):
-        place = Place.objects.get(pk=pk)
-        review = Review.objects.get(place=place)
-        return Response({'review': review }, template_name='places/detail.html')
-
-
-    def create(self, request):
-        serializer = ReviewSerializer(data=request.data)
-        if not serializer.is_valid():
-            return Response({'serializer': serializer})
-        serializer.save()
-        return redirect('places:index')
-
-
-    def update(self, request, pk):
-        review = Review.objects.get(pk=pk)
-        place = review.place
-        serializer = ReviewSerializer(review, data=request.data)
-        if not serializer.is_valid():
-            return Response({'serializer': serializer, 'review': review})
-        serializer.save()
-        return redirect('places:detail', place.pk)
-
-
-    def destroy(self, request, pk):
-        review = Review.objects.get(pk=pk)
-        place = review.place
-        review.delete()
-        return redirect('places:detail', place.pk)
-
-
-    def perform_create(self, serializer):
-        serializer.save(user = self.request.user)
+            if form.is_valid() and formset.is_valid():
+                form.save()
+                for photoform in formset.cleaned_data:
+                    if photoform:
+                        photo = Photo(place=form, photo=photoform['photo'])
+                        photo.save()
+                return redirect('places:detail', place.pk)
+        else:
+            form = PlaceForm(instance=place)
+            formset = PhotoFormSet(queryset=Photo.objects.filter(place=place))
+        context = {
+            'form': form,
+            'formset': formset,
+        }
+        return render(request, 'places/update.html', context)
+    return redirect('places:detail', place_pk)
