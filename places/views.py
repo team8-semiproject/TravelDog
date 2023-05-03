@@ -7,55 +7,20 @@ from .forms import PlaceForm, PhotoForm, ReviewForm
 from .models import Place, Photo, Review
 
 
-class PlaceListView(View):
-    def get(self, request):
-        places = get_list_or_404(Place)
-        context = {
-            'places': places,
-        }
-        return render(request, 'places/index.html', context)
+def index(request):
+    places = get_list_or_404(Place)
+    context = {
+        'places': places,
+    }
+    return render(request, 'places/index.html', context)
 
 
-class PlaceDetailView(View):
-    def get(self, request, place_pk):
-        place = get_object_or_404(Place, pk=place_pk)
-        context = {
-            'place': place,
-        }
-        return render(request, 'places/detail.html', context)
-
-
-    def delete(self, request, place_pk):
-        if request.user.is_superuser or request.user.is_staff:
-            place = get_object_or_404(Place, pk=place_pk)
-            place.delete()
-            return redirect('places:index')
-        return redirect('places:detail', place_pk)
-
-
-class Review(View):
-    @method_decorator(login_required)
-    def post(self, request, place_pk):
-        place = get_object_or_404(Place, pk=place_pk)
-        form = ReviewForm(request.POST)
-        if form.is_valid():
-            review = form.save(commit = False)
-            review.place = place
-            review.user = request.user
-            review.save()
-            return redirect('places:detail', place_pk)
-        context = {
-            'review': review,
-            'form': form,
-        }
-        return render(request, 'places/detail.html', context)
-    
-
-    def delete(self, request, place_pk, review_pk):
-        review = get_object_or_404(Review, pk=review_pk)
-        if review.user == request.user:
-            review.delete()
-        return redirect('places:detail', place_pk)
+def detail(request, place_pk):
+    place = get_object_or_404(Place, pk=place_pk)
+    context = {
+        'place': place,
+    }
+    return render(request, 'places/detail.html', context)
 
 
 def create(request):
@@ -108,4 +73,35 @@ def update(request, place_pk):
             'formset': formset,
         }
         return render(request, 'places/update.html', context)
+    return redirect('places:detail', place_pk)
+
+
+def delete(request, place_pk):
+    if request.user.is_staff:
+        place = get_object_or_404(Place, pk=place_pk)
+        place.delete()
+        return redirect('places:index')
+    return redirect('places:detail', place_pk)
+
+
+def review_create(request, place_pk):
+    place = get_object_or_404(Place, pk=place_pk)
+    form = ReviewForm(request.POST)
+    if form.is_valid():
+        review = form.save(commit = False)
+        review.place = place
+        review.user = request.user
+        review.save()
+        return redirect('places:detail', place_pk)
+    context = {
+        'place': place,
+        'form': form,
+    }
+    return render(request, 'places/review.html', context)
+
+
+def review_delete(request, place_pk, review_pk):
+    review = get_object_or_404(Review, pk=review_pk)
+    if review.user == request.user:
+        review.delete()
     return redirect('places:detail', place_pk)
