@@ -15,14 +15,6 @@ def index(request):
     return render(request, 'places/index.html', context)
 
 
-def detail(request, place_pk):
-    place = get_object_or_404(Place, pk=place_pk)
-    context = {
-        'place': place,
-    }
-    return render(request, 'places/detail.html', context)
-
-
 def create(request):
     if request.user.is_staff:
         PhotoFormSet = modelformset_factory(Photo, form=PhotoForm, extra=3)
@@ -47,6 +39,26 @@ def create(request):
         }
         return render(request, 'places/create.html', context)
     return redirect('places:index')
+
+
+def detail(request, place_pk):
+    place = get_object_or_404(Place, pk=place_pk)
+    reviews = Review.objects.filter(place=place)
+    context = {
+        'place': place,
+        'reviews': reviews,
+    }
+    return render(request, 'places/detail.html', context)
+
+
+@login_required
+def bookmark(request, place_pk):
+    place = get_object_or_404(Place, pk=place_pk)
+    if place.bookmark.filter(pk=request.user.pk).exists():
+        place.bookmark.remove(request.user)
+    else:
+        place.bookmark.add(request.user)
+    return redirect('places:detail', place.pk)
 
 
 def update(request, place_pk):
@@ -84,6 +96,7 @@ def delete(request, place_pk):
     return redirect('places:detail', place_pk)
 
 
+@login_required
 def review_create(request, place_pk):
     place = get_object_or_404(Place, pk=place_pk)
     form = ReviewForm(request.POST)
@@ -99,7 +112,17 @@ def review_create(request, place_pk):
     }
     return render(request, 'places/review.html', context)
 
+@login_required
+def review_like(request, place_pk, review_pk):
+    review = get_object_or_404(Review, pk=review_pk)
+    if review.like.filter(pk=request.user.pk).exists():
+        review.like.remove(request.user)
+    else:
+        review.like.add(request.user)
+    return redirect('places:detail', place_pk)
 
+
+@login_required
 def review_delete(request, place_pk, review_pk):
     review = get_object_or_404(Review, pk=review_pk)
     if review.user == request.user:
