@@ -47,6 +47,8 @@ class User(auth_models.AbstractBaseUser):
             'unique': _("A user with that username already exists."),
         },
     )
+    # profile picture
+    picture = models.ImageField(blank=True, upload_to='images/user_profile_picture/') 
 
     is_active = models.BooleanField(default=True)
     is_admin = models.BooleanField(default=False)
@@ -68,4 +70,6 @@ class User(auth_models.AbstractBaseUser):
     @property
     def is_staff(self):
         return self.is_admin
+    
+
     
