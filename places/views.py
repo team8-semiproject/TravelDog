@@ -15,7 +15,7 @@ def index(request):
     context = {
         'places': places,
     }
-    return render(request, 'places/index.html')
+    return render(request, 'places/index.html', context)
 
 
 def detail(request, place_pk):
