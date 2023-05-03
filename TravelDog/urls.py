@@ -5,6 +5,7 @@ from django.conf import settings
 from rest_framework import permissions
 from drf_yasg.views import get_schema_view
 from drf_yasg import openapi
+from places import views
 
 
 schema_view = get_schema_view(
@@ -22,6 +23,7 @@ schema_view = get_schema_view(
 
 
 urlpatterns = [
+    path('', views.index_redirect),
     path('admin/', admin.site.urls),
     path('swagger/', schema_view.with_ui('swagger')),
     path('accounts/', include('accounts.urls')),

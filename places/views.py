@@ -6,13 +6,16 @@ from django.views import View
 from .forms import PlaceForm, PhotoForm, ReviewForm
 from .models import Place, Photo, Review
 
+def index_redirect(request):
+    return redirect('places:index')
+
 
 def index(request):
     places = get_list_or_404(Place)
     context = {
         'places': places,
     }
-    return render(request, 'places/index.html', context)
+    return render(request, 'places/index.html')
 
 
 def detail(request, place_pk):
