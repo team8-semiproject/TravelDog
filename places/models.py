@@ -1,5 +1,6 @@
 from django.db import models
 from django.conf import settings
+from django.db.models import Avg
 
 
 class Place(models.Model):
@@ -11,6 +12,11 @@ class Place(models.Model):
 
     def __str__(self):
         return str(self.name)
+    
+    def avg_ratings(self):
+        return self.place_reviews.aggregate(
+            Avg('star'),
+        )
 
 
 class Photo(models.Model):
