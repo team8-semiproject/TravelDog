@@ -5,15 +5,20 @@ from django.utils.decorators import method_decorator
 from django.views import View
 from .forms import PlaceForm, PhotoForm, ReviewForm
 from .models import Place, Photo, Review
+from django.core.paginator import Paginator
 
 def index_redirect(request):
     return redirect('places:index')
 
-
 def index(request):
     places = get_list_or_404(Place)
+    page = request.GET.get('page', '1')
+    per_page = 16
+    paginator = Paginator(places, per_page)
+    page_object = paginator.get_page(page)
     context = {
-        'places': places,
+        'places': page_object,
+        'range': ['1', '2', '3', '4', '5'],
     }
     return render(request, 'places/index.html', context)
 
@@ -47,9 +52,15 @@ def create(request):
 def detail(request, place_pk):
     place = get_object_or_404(Place, pk=place_pk)
     reviews = Review.objects.filter(place=place)
+    page = request.GET.get('page', '1')
+    per_page = 8
+    paginator = Paginator(reviews, per_page)
+    page_object = paginator.get_page(page)
+
     context = {
         'place': place,
-        'reviews': reviews,
+        'reviews': page_object,
+        'range': ['1', '2', '3', '4', '5'],
     }
     return render(request, 'places/detail.html', context)
 

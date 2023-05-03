@@ -1,22 +1,25 @@
 {% extends 'base.html' %}
-
+{% load static %}
 {% block content %}
+{% if place.photos.all|length > 1 %}
 <div id="default-carousel" class="relative w-full" data-carousel="slide">
   <!-- Carousel wrapper -->
   <div class="relative h-56 overflow-hidden md:h-96">
-       <!-- Item 1 -->
-      <div class="hidden duration-700 ease-in-out" data-carousel-item>
-          <img src="https://cdn.visitkorea.or.kr/img/call?cmd=VIEW&id=cf325192-7620-4194-a6bd-8fa4fcbed287" class="absolute block w-full -translate-x-1/2 -translate-y-1/2 top-1/2 left-1/2" alt="...">
-      </div>
-      <!-- Item 2 -->
-      <div class="hidden duration-700 ease-in-out" data-carousel-item>
-          <img src="https://cdn.visitkorea.or.kr/img/call?cmd=VIEW&id=57ac97a8-199c-45cd-be72-dd301fcaa4b0" class="absolute block w-full -translate-x-1/2 -translate-y-1/2 top-1/2 left-1/2" alt="...">
-      </div>
+    {% for photo in place.photos.all %}
+    <div class="hidden duration-700 ease-in-out" data-carousel-item>
+      <img src="{{photo.photo.url}}" class="absolute block w-full -translate-x-1/2 -translate-y-1/2 top-1/2 left-1/2" alt="{{photo.photo}}">
+    </div>
+    {% endfor %}
   </div>
   <!-- Slider indicators -->
   <div class="absolute z-30 flex space-x-3 -translate-x-1/2 bottom-5 left-1/2">
-      <button type="button" class="w-3 h-3 rounded-full" aria-current="true" aria-label="Slide 1" data-carousel-slide-to="0"></button>
-      <button type="button" class="w-3 h-3 rounded-full" aria-current="false" aria-label="Slide 2" data-carousel-slide-to="1"></button>
+      {% if place.photos.all %}
+      {% for photo in place.photos.all %}
+      <button type="button" class="w-3 h-3 rounded-full" aria-current="false" aria-label="Slide {{ forloop.counter }}" data-carousel-slide-to="{{ forloop.counter|add:-1 }}"></button>
+      {% endfor %}
+      {% else %}
+      <button type="button" class="w-3 h-3 rounded-full" aria-current="false" aria-label="Slide 1" data-carousel-slide-to="0"></button>
+      {% endif %}
   </div>
   <!-- Slider controls -->
   <button type="button" class="absolute top-0 left-0 z-30 flex items-center justify-center h-full px-4 cursor-pointer group focus:outline-none" data-carousel-prev>
@@ -32,39 +35,101 @@
       </span>
   </button>
 </div>
+{% else %}
+<div class="relative w-full">
+  <div class="relative h-56 overflow-hidden md:h-96">
+    {% for photo in place.photos.all %}
+    <div>
+      <img src="{{photo.photo.url}}" class="absolute block w-full -translate-x-1/2 -translate-y-1/2 top-1/2 left-1/2" alt="{{photo.photo}}">
+    </div>
+    {% empty %}
+    <div>
+      <img src="{% static 'img/default-place.jpg' %}" class="absolute block w-full -translate-x-1/2 -translate-y-1/2 top-1/2 left-1/2" alt="default-place-img">
+    </div>
+    {% endfor %}
+  </div>
+</div>
+{% endif %}
 <div class="bg-white">
   <div class="mx-auto grid max-w-2xl grid-cols-1 items-center gap-x-8 gap-y-16 px-4 pb-24 pt-4 sm:px-6 sm:pb-32 sm:pt-20 lg:max-w-7xl lg:grid-cols-2 lg:px-8">
     <div>
-      <h2 class="text-3xl font-bold tracking-tight text-gray-900 sm:text-4xl">혼자두면장판뜯어서차린개카페</h2>
+      <h2 class="text-3xl font-bold tracking-tight text-gray-900 sm:text-4xl">{{place.name}}</h2>
       <div class="flex gap-2 mt-4">
         <i class="fa-solid fa-location-dot text-primary-700 mt-1"></i>
-        <p class="text-gray-500">서울특별시 관악구 남부순환로 1665 (남부순환로)</p>
+        <p id="place-address" class="text-gray-500">{{place.address}}</p>
       </div>
-      <div class="flex gap-0.5 mt-4">
-        <i class="fa-solid fa-star text-amber-400 my-auto"></i>
-        <i class="fa-solid fa-star text-amber-400 my-auto"></i>
-        <i class="fa-solid fa-star text-amber-400 my-auto"></i>
-        <i class="fa-solid fa-star text-amber-400 my-auto"></i>
-        <i class="fa-solid fa-star text-slate-300 my-auto"></i>
-        <span class="text-base text-gray-500 ms-1">4.0</span>
-      </div>
+      {% with avg_ratings=place.avg_ratings %}
+        {% if not avg_ratings.star__avg %}
+        <div class="flex content-center	gap-0.5 mt-4">
+          <i class="fa-solid fa-star text-slate-300 my-auto"></i>
+          <i class="fa-solid fa-star text-slate-300 my-auto"></i>
+          <i class="fa-solid fa-star text-slate-300 my-auto"></i>
+          <i class="fa-solid fa-star text-slate-300 my-auto"></i>
+          <i class="fa-solid fa-star text-slate-300 my-auto"></i>
+          <span class="text-base text-gray-500 ms-1">0.0</span>
+        </div>
+        {% else %}
+        <div class="flex content-center	gap-0.5 mt-4">
+          {% for i in range %}
+          {% if i >= avg_ratings.star__avg|floatformat:'1' %}
+          <i class="fa-solid fa-star text-slate-300 my-auto"></i>
+          {% else %}
+          <i class="fa-solid fa-star text-amber-400 my-auto"></i>
+          {% endif %}
+          {% endfor %}
+          <span class="text-base text-gray-500 ms-1">{{avg_ratings.star__avg|floatformat:'1'}}</span>
+        </div>
+        {% endif %}
+      {% endwith %}
       <div class="w-full h-56 mt-4 rounded map-wrapper lg:hidden">
         <div id="map"></div>
       </div>
-      <h3 class="text-base font-bold tracking-tight text-gray-700 sm:text-lg mt-8 mb-4">댓글(20)</h3>
+      <h3 class="text-base font-bold tracking-tight text-gray-700 sm:text-lg mt-8 mb-4">댓글({{reviews|length}})</h3>
+      {% for review in reviews %}
       <div class="mb-12">
-        <div class="flex items-center gap-x-4 mb-4">
-          <img class="h-12 w-12 rounded-full" src="https://images.unsplash.com/photo-1494790108377-be9c29b29330?ixlib=rb-1.2.1&ixid=eyJhcHBfaWQiOjEyMDd9&auto=format&fit=facearea&facepad=2&w=256&h=256&q=80" alt="">
-          <div>
-            <h3 class="text-base font-semibold leading-7 tracking-tight text-gray-900">Leslie Alexander</h3>
-            <time class="text-sm leading-6 text-gray-500" datetime="2023-04-29">
+        <div class="flex justify-between mb-4">
+          <div class="flex items-center gap-x-4">
+            <img class="h-12 w-12 rounded-full" src="{% static 'img/default-profile.jpg' %}" alt="default-profile-img">
+            <div>
+              <h3 class="text-base font-semibold leading-7 tracking-tight text-gray-900">{{review.user}}</h3>
+              <time class="text-sm leading-6 text-gray-500" datetime="{{review.created_at}}">
+            </div>
           </div>
+          {% if request.user == review.user %}
+          <div id="review-more-icon" class="relative">
+            <button type="button" class= aria-expanded="false">
+              <i class="fa-solid fa-ellipsis text-gray-500"></i>
+            </button>
+            <div id="review-more-modal" class="hidden absolute right-0 z-10 flex w-screen max-w-max px-1 shadow-lg rounded">
+              <div class="p-1">
+                {% comment %} <div class="group relative flex gap-x-6 rounded-lg p-4 hover:bg-gray-50">
+                  <div>
+                    <a href="" class="font-semibold text-gray-900">
+                      수정하기
+                      <span class="absolute inset-0"></span>
+                    </a>
+                  </div>
+                </div> {% endcomment %}
+                <div class="group relative flex gap-x-6 rounded-lg p-4 hover:bg-gray-50">
+                  <div>
+                    <form action="{% url 'places:review_delete' place.pk review.pk %}" method="POST">
+                      {% csrf_token %}
+                      <button type="submit" class="font-semibold text-gray-900" onclick="onDelete()">
+                        삭제하기
+                      </button>
+                    </form>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+          {% endif %}
         </div>
-        <p class="text-base text-gray-900 mb-4">수도권에서 가까운 곳 중 댕댕이와 함께 이만한곳 없죠. 반려견과 안심하고 산책하세요</p>
+        <p class="text-base text-gray-900 mb-4">{{review.content}}</p>
         {% if request.user.is_authenticated %}
-        <form id="#" data-comment-id="#" data-post-id="#">
+        <form id="#" data-review-id="#" data-place-id="#">
         {% csrf_token %}
-        {% if request.user in comment.like_users.all %}
+        {% if request.user in reviews.like_reviews.all %}
           <button type="submit" class="p-0 text-primary-700"><i class="fa-solid fa-heart"></i></button>
         {% else %}
           <button type="submit" class="p-0 text-gray-500"><i class="fa-regular fa-heart"></i></button>
@@ -72,72 +137,72 @@
         {% else %}
             <button type="submit" class="p-0 text-gray-500" disabled="disabled"><i class="fa-regular fa-heart"></i></button> 
         {% endif %}
-          {% comment %} <span class="">{{ comment.like_users.count }}</span> {% endcomment %}
-          <span class="text-gray-500">2</span>
+        {% if reviews.like_reviews %}
+          <span class="text-gray-500">{{ reviews.like_reviews.count }}</span>
+          {% else %}
+          <span class="text-gray-500">0</span>
+        {% endif %}
         </form>
       </div>
+      {% empty %}
       <div class="mb-12">
-        <div class="flex items-center gap-x-4 mb-4">
-          <img class="h-12 w-12 rounded-full" src="https://images.unsplash.com/photo-1494790108377-be9c29b29330?ixlib=rb-1.2.1&ixid=eyJhcHBfaWQiOjEyMDd9&auto=format&fit=facearea&facepad=2&w=256&h=256&q=80" alt="">
-          <div>
-            <h3 class="text-base font-semibold leading-7 tracking-tight text-gray-900">Leslie Alexander</h3>
-            <time class="text-sm leading-6 text-gray-500" datetime="2023-04-30">
-          </div>
-        </div>
-        <p class="text-base text-gray-900 mb-4">수도권에서 가까운 곳 중 댕댕이와 함께 이만한곳 없죠. 반려견과 안심하고 산책하세요</p>
-        {% if request.user.is_authenticated %}
-        <form id="#" data-comment-id="#" data-post-id="#">
-        {% csrf_token %}
-        {% if request.user in comment.like_users.all %}
-          <button type="submit" class="p-0 text-primary-700"><i class="fa-solid fa-heart"></i></button>
-        {% else %}
-          <button type="submit" class="p-0 text-gray-500"><i class="fa-regular fa-heart"></i></button>
-        {% endif %}
-        {% else %}
-            <button type="submit" class="p-0 text-gray-500" disabled="disabled"><i class="fa-regular fa-heart"></i></button> 
-        {% endif %}
-          {% comment %} <span class="">{{ comment.like_users.count }}</span> {% endcomment %}
-          <span class="text-gray-500">2</span>
-        </form>
+        <p class="text-base text-gray-500 text-center mt-8">아직 등록된 리뷰가 없어요 :(</p>
       </div>
+      {% endfor %}
 
       <nav aria-label="Page navigation example" class="flex justify-center mt-20">
         <ul class="inline-flex items-center -space-x-px">
+          {% if reviews.has_previous %}
           <li>
-            <a href="#" class="block px-3 py-2 ml-0 leading-tight text-gray-500 bg-white border border-gray-300 rounded-l-lg hover:bg-gray-100 hover:text-gray-700 dark:bg-gray-800 dark:border-gray-700 dark:text-gray-400 dark:hover:bg-gray-700 dark:hover:text-white">
-              <span class="sr-only">Previous</span>
+            <a href="?page={{ reviews.previous_page_number }}" class="block px-3 py-2 ml-0 leading-tight text-gray-500 bg-white border border-gray-300 rounded-l-lg hover:bg-gray-100 hover:text-gray-700 dark:bg-gray-800 dark:border-gray-700 dark:text-gray-400 dark:hover:bg-gray-700 dark:hover:text-white">
+              <span class="sr-only">이전</span>
               <svg aria-hidden="true" class="w-5 h-5" fill="currentColor" viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg"><path fill-rule="evenodd" d="M12.707 5.293a1 1 0 010 1.414L9.414 10l3.293 3.293a1 1 0 01-1.414 1.414l-4-4a1 1 0 010-1.414l4-4a1 1 0 011.414 0z" clip-rule="evenodd"></path></svg>
             </a>
           </li>
+          {% else %}
           <li>
-            <a href="#" class="px-3 py-2 leading-tight text-gray-500 bg-white border border-gray-300 hover:bg-gray-100 hover:text-gray-700 dark:bg-gray-800 dark:border-gray-700 dark:text-gray-400 dark:hover:bg-gray-700 dark:hover:text-white">1</a>
-          </li>
-          <li>
-            <a href="#" class="px-3 py-2 leading-tight text-gray-500 bg-white border border-gray-300 hover:bg-gray-100 hover:text-gray-700 dark:bg-gray-800 dark:border-gray-700 dark:text-gray-400 dark:hover:bg-gray-700 dark:hover:text-white">2</a>
-          </li>
-          <li>
-            <a href="#" aria-current="page" class="z-10 px-3 py-2 leading-tight text-blue-600 border border-blue-300 bg-blue-50 hover:bg-blue-100 hover:text-blue-700 dark:border-gray-700 dark:bg-gray-700 dark:text-white">3</a>
-          </li>
-          <li>
-            <a href="#" class="px-3 py-2 leading-tight text-gray-500 bg-white border border-gray-300 hover:bg-gray-100 hover:text-gray-700 dark:bg-gray-800 dark:border-gray-700 dark:text-gray-400 dark:hover:bg-gray-700 dark:hover:text-white">4</a>
-          </li>
-          <li>
-            <a href="#" class="px-3 py-2 leading-tight text-gray-500 bg-white border border-gray-300 hover:bg-gray-100 hover:text-gray-700 dark:bg-gray-800 dark:border-gray-700 dark:text-gray-400 dark:hover:bg-gray-700 dark:hover:text-white">5</a>
-          </li>
-          <li>
-            <a href="#" class="block px-3 py-2 leading-tight text-gray-500 bg-white border border-gray-300 rounded-r-lg hover:bg-gray-100 hover:text-gray-700 dark:bg-gray-800 dark:border-gray-700 dark:text-gray-400 dark:hover:bg-gray-700 dark:hover:text-white">
-              <span class="sr-only">Next</span>
-              <svg aria-hidden="true" class="w-5 h-5" fill="currentColor" viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg"><path fill-rule="evenodd" d="M7.293 14.707a1 1 0 010-1.414L10.586 10 7.293 6.707a1 1 0 011.414-1.414l4 4a1 1 0 010 1.414l-4 4a1 1 0 01-1.414 0z" clip-rule="evenodd"></path></svg>
+            <a href="" class="block px-3 py-2 ml-0 leading-tight text-gray-500 bg-white border border-gray-300 rounded-l-lg hover:bg-gray-100 hover:text-gray-700 dark:bg-gray-800 dark:border-gray-700 dark:text-gray-400 dark:hover:bg-gray-700 dark:hover:text-white disabled">
+              <span class="sr-only">이전</span>
+              <svg aria-hidden="true" class="w-5 h-5" fill="currentColor" viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg"><path fill-rule="evenodd" d="M12.707 5.293a1 1 0 010 1.414L9.414 10l3.293 3.293a1 1 0 01-1.414 1.414l-4-4a1 1 0 010-1.414l4-4a1 1 0 011.414 0z" clip-rule="evenodd"></path></svg>
             </a>
           </li>
+          {% endif %}
+          {% for page_number in reviews.paginator.page_range %}
+            {% if page_number >= reviews.number|add:-5 and page_number <= reviews.number|add:5 %}
+              {% if page_number == reviews.number %}
+                <li>
+                  <a href="?page={{ page_number }}" aria-current="page" class="z-10 px-3 py-2 leading-tight text-blue-600 border border-blue-300 bg-blue-50 hover:bg-blue-100 hover:text-blue-700 dark:border-gray-700 dark:bg-gray-700 dark:text-white">{{ page_number }}</a>
+                </li>
+              {% else %}
+                <li>
+                  <a href="?page={{ page_number }}" class="px-3 py-2 leading-tight text-gray-500 bg-white border border-gray-300 hover:bg-gray-100 hover:text-gray-700 dark:bg-gray-800 dark:border-gray-700 dark:text-gray-400 dark:hover:bg-gray-700 dark:hover:text-white">{{ page_number }}</a>
+                </li>
+              {% endif %}
+            {% endif %}
+          {% endfor %}
+          {% if reviews.has_next %}
+            <li>
+              <a href="?page={{ reviews.next_page_number }}" class="block px-3 py-2 leading-tight text-gray-500 bg-white border border-gray-300 rounded-r-lg hover:bg-gray-100 hover:text-gray-700 dark:bg-gray-800 dark:border-gray-700 dark:text-gray-400 dark:hover:bg-gray-700 dark:hover:text-white">
+                <span class="sr-only">다음</span>
+                <svg aria-hidden="true" class="w-5 h-5" fill="currentColor" viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg"><path fill-rule="evenodd" d="M7.293 14.707a1 1 0 010-1.414L10.586 10 7.293 6.707a1 1 0 011.414-1.414l4 4a1 1 0 010 1.414l-4 4a1 1 0 01-1.414 0z" clip-rule="evenodd"></path></svg>
+              </a>
+            </li>
+          {% else %}
+            <li>
+              <a href="" tabindex="-1" aria-disabled="true" class="block px-3 py-2 leading-tight text-gray-500 bg-white border border-gray-300 rounded-r-lg hover:bg-gray-100 hover:text-gray-700 dark:bg-gray-800 dark:border-gray-700 dark:text-gray-400 dark:hover:bg-gray-700 dark:hover:text-white disabled">
+                <span class="sr-only">다음</span>
+                <svg aria-hidden="true" class="w-5 h-5" fill="currentColor" viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg"><path fill-rule="evenodd" d="M7.293 14.707a1 1 0 010-1.414L10.586 10 7.293 6.707a1 1 0 011.414-1.414l4 4a1 1 0 010 1.414l-4 4a1 1 0 01-1.414 0z" clip-rule="evenodd"></path></svg>
+              </a>
+            </li>
+          {% endif %}
         </ul>
       </nav>
 
     </div>
     <div class="hidden lg:flex flex-col relative h-full">
       <div class="sticky top-10 rounded-xl shadow-xl pt-6">
-        <h2 class="text-xl font-bold tracking-tight text-gray-900 sm:text-lg mx-2">'혼자두면장판뜯어서차린개카페'위치</h2>
-        <p class="text-gray-500 mt-2 mx-2">서울특별시 관악구 남부순환로 1665 (남부순환로)</p>
+        <h2 class="text-xl font-bold tracking-tight text-gray-900 sm:text-lg mx-2">'{{place.name}}'위치</h2>
+        <p class="text-gray-500 mt-2 mx-2">{{place.address}}</p>
         <div class="h-56 map-wrapper mt-6">
           <div id="map-right" class="h-full"></div>
         </div>
@@ -160,7 +225,7 @@
 {% endblock content %}
 
 {% block js %}
-<script type="text/javascript" src="//dapi.kakao.com/v2/maps/sdk.js?appkey='apikey값'&libraries=LIBRARY"></script>
+<script type="text/javascript" src="//dapi.kakao.com/v2/maps/sdk.js?appkey='api-key'&libraries=services"></script>
 <script>
   const container = document.getElementById('map');
   const containerRight = document.getElementById('map-right');
@@ -240,9 +305,29 @@
   times.forEach( el => {
     el.innerHTML = elapsedTime(el.dateTime)
   });
+
+  const bodyTag = document.querySelector('body')
+    
+  try {
+    const reviewMoreIcon = document.querySelector('#review-more-icon')
+    const reviewMoreModal = document.querySelector('#review-more-modal')
+    reviewMoreIcon.addEventListener('click', (event) => {
+      reviewMoreModal.classList.remove('hidden')
+    })
+
+    bodyTag.addEventListener('mouseup', (event) => {
+      if (!reviewMoreModal.contains(event.target)) {
+        reviewMoreModal.classList.add('hidden')
+      }
+    })
+  } catch(err) {
+  }
   
-
-
+  const onDelete = () => {
+    if (window.confirm('삭제하시겠습니까?')) {
+      alert('삭제되었습니다.')
+    } 
+  }
   
 </script>
 {% endblock js %}
