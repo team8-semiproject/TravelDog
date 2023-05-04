@@ -1,5 +1,6 @@
 {% extends 'base.html' %}
 {% load static %}
+{% load tailwind_filters %}
 {% block content %}
 {% if place.photos.all|length > 1 %}
 <div id="default-carousel" class="relative w-full" data-carousel="slide">
@@ -53,6 +54,15 @@
 <div class="bg-white">
   <div class="mx-auto grid max-w-2xl grid-cols-1 items-center gap-x-8 gap-y-16 px-4 pb-24 pt-4 sm:px-6 sm:pb-32 sm:pt-20 lg:max-w-7xl lg:grid-cols-2 lg:px-8">
     <div>
+      {% if request.user.is_authenticated and request.user.is_staff %}
+      <div class="my-8 flex gap-1 lg:mt-0">
+        <a href="{% url 'places:update' place.pk %}" class="text-white bg-primary-700 hover:bg-primary-800 focus:ring-4 focus:ring-primary-300 font-medium rounded-lg text-sm px-4 lg:px-5 py-2 lg:py-2.5 mr-2 dark:bg-primary-600 dark:hover:bg-primary-700 focus:outline-none dark:focus:ring-primary-800">플레이스 수정하기</a>
+        <form action="{% url 'places:delete' place.pk %}" method="POST">
+          {% csrf_token %}
+          <button type="submit" class="text-white bg-gray-700 hover:bg-gray-800 focus:ring-4 focus:ring-gray-300 font-medium rounded-lg text-sm px-4 lg:px-5 py-2 lg:py-2.5 mr-2 dark:bg-gray-600 dark:hover:bg-gray-700 focus:outline-none dark:focus:ring-gray-800">삭제</button>
+        </form>
+      </div>
+      {% endif %}
       <h2 class="text-3xl font-bold tracking-tight text-gray-900 sm:text-4xl">{{place.name}}</h2>
       <div class="flex gap-2 mt-4">
         <i class="fa-solid fa-location-dot text-primary-700 mt-1"></i>
@@ -84,23 +94,61 @@
       <div class="w-full h-56 mt-4 rounded map-wrapper lg:hidden">
         <div id="map"></div>
       </div>
-      <h3 class="text-base font-bold tracking-tight text-gray-700 sm:text-lg mt-8 mb-4">댓글({{reviews|length}})</h3>
+      
+      <h3 class="text-base font-bold tracking-tight text-gray-700 sm:text-lg mt-8 mb-4">리뷰({{reviews|length}})</h3>
+      {% if request.user.is_authenticated %}
+      <div class="mb-8">
+        <form action="{% url 'places:review_create' place.pk %}" method="POST">
+          {% csrf_token %}
+          <div class="mb-2">
+            <span class="relative text-3xl text-gray-200 stars">
+              ★★★★★
+              <span class="absolute w-0 left-0	text-primary-800 overflow-hidden pointer-events-none">★★★★★</span>
+              <input type="range" oninput="drawStar(this)" value="0" step="1" min="0" max="5" id="star" name="star" class="w-full h-full absolute left-0 opacity-0 cursor-pointer">
+            </span>
+          </div>
+          <div class="mb-8">
+            <label for="content" class="block text-sm font-medium leading-6 text-gray-900">내용</label>
+            <div class="mt-2">
+              <input type="text" name="content" id="content" class="block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-primary-800 sm:text-sm sm:leading-6">
+            </div>
+          </div>
+        <button type="submit" class="text-white bg-primary-700 hover:bg-primary-800 focus:ring-4 focus:ring-primary-300 font-medium rounded-lg text-sm px-4 lg:px-5 py-2 lg:py-2.5 mr-2 dark:bg-primary-600 dark:hover:bg-primary-700 focus:outline-none dark:focus:ring-primary-800">리뷰 올리기</button>
+        </form>
+      </div>
+      {% endif %}
       {% for review in reviews %}
       <div class="mb-12">
         <div class="flex justify-between mb-4">
-          <div class="flex items-center gap-x-4">
+          <div class="group flex items-center gap-x-4">
+            {% if review.user.picture %}
+            <img class="h-12 w-12 rounded-full" src="{{ review.user.picture.url }}" alt="{{ review.user.picture }}">
+            {% else %}
             <img class="h-12 w-12 rounded-full" src="{% static 'img/default-profile.jpg' %}" alt="default-profile-img">
+            {% endif %}
             <div>
-              <h3 class="text-base font-semibold leading-7 tracking-tight text-gray-900">{{review.user}}</h3>
-              <time class="text-sm leading-6 text-gray-500" datetime="{{review.created_at}}">
+              <a href="{% url 'accounts:profile' review.user.username %}" class="text-base font-semibold leading-7 tracking-tight text-gray-900 group-hover:underline">{{review.user}}</a>
+              <div class="flex items-center	 gap-2">
+                <div class="flex content-center	gap-0.5">
+                  {% for i in num_range %}
+                  {% if i > review.star %}
+                  <i class="fa-solid fa-star text-slate-300 my-auto"></i>
+                  {% else %}
+                  <i class="fa-solid fa-star text-amber-400 my-auto"></i>
+                  {% endif %}
+                  {% endfor %}
+                </div>
+                <div class="text-xs leading-6 text-gray-500">|</div>
+                <time class="text-sm leading-6 text-gray-500" datetime="{{review.created_at}}">
+              </div>
             </div>
           </div>
           {% if request.user == review.user %}
-          <div id="review-more-icon" class="relative">
+          <div id="review-more-icon" class="relative review-more-icons">
             <button type="button" class= aria-expanded="false">
               <i class="fa-solid fa-ellipsis text-gray-500"></i>
             </button>
-            <div id="review-more-modal" class="hidden absolute right-0 z-10 flex w-screen max-w-max px-1 shadow-lg rounded">
+            <div id="review-more-modal" class="hidden absolute right-0 z-10 flex w-screen max-w-max px-1 shadow-lg rounded review-more-modals">
               <div class="p-1">
                 {% comment %} <div class="group relative flex gap-x-6 rounded-lg p-4 hover:bg-gray-50">
                   <div>
@@ -127,19 +175,19 @@
         </div>
         <p class="text-base text-gray-900 mb-4">{{review.content}}</p>
         {% if request.user.is_authenticated %}
-        <form id="#" data-review-id="#" data-place-id="#">
-        {% csrf_token %}
-        {% if request.user in reviews.like_reviews.all %}
-          <button type="submit" class="p-0 text-primary-700"><i class="fa-solid fa-heart"></i></button>
-        {% else %}
-          <button type="submit" class="p-0 text-gray-500"><i class="fa-regular fa-heart"></i></button>
-        {% endif %}
+        <form action="{% url 'places:review_like' place.pk review.pk %}" method="POST">
+          {% csrf_token %}
+          {% if request.user in review.like.all %}
+            <button type="submit" class="p-0 text-primary-700"><i class="fa-solid fa-heart"></i></button>
+          {% else %}
+            <button type="submit" class="p-0 text-gray-500"><i class="fa-regular fa-heart"></i></button>
+          {% endif %}
         {% else %}
             <button type="submit" class="p-0 text-gray-500" disabled="disabled"><i class="fa-regular fa-heart"></i></button> 
         {% endif %}
-        {% if reviews.like_reviews %}
-          <span class="text-gray-500">{{ reviews.like_reviews.count }}</span>
-          {% else %}
+        {% if review.like %}
+          <span class="text-gray-500">{{ review.like.count }}</span>
+        {% else %}
           <span class="text-gray-500">0</span>
         {% endif %}
         </form>
@@ -206,10 +254,20 @@
         <div class="h-56 map-wrapper mt-6">
           <div id="map-right" class="h-full"></div>
         </div>
-        <button type="submit" class="flex items-center justify-center gap-2 text-gray-800 dark:text-white hover:bg-gray-50 font-medium text-base px-4 lg:px-5 py-2 lg:py-2.5 mr-2 dark:hover:bg-gray-700 focus:outline-none dark:focus:ring-gray-800 w-full border-t-2 border-gray-100">
-          <i class="fa-regular fa-bookmark text-gray-500"></i>
-          <span>장소 저장하기</span>
-        </button>
+        <form action="{% url 'places:bookmark' place.pk %}" method="POST">
+          {% csrf_token %}
+          {% if request.user in place.bookmark.all %}
+          <button type="submit" class="flex items-center justify-center gap-2 text-gray-800 dark:text-white hover:bg-gray-50 font-medium text-base px-4 lg:px-5 py-2 lg:py-2.5 mr-2 dark:hover:bg-gray-700 focus:outline-none dark:focus:ring-gray-800 w-full border-t-2 border-gray-100">
+            <i class="fa-solid fa-bookmark text-primary-700"></i>
+            <span>장소 저장하기 취소</span>
+          </button>
+          {% else %}
+          <button type="submit" class="flex items-center justify-center gap-2 text-gray-800 dark:text-white hover:bg-gray-50 font-medium text-base px-4 lg:px-5 py-2 lg:py-2.5 mr-2 dark:hover:bg-gray-700 focus:outline-none dark:focus:ring-gray-800 w-full border-t-2 border-gray-100">
+            <i class="fa-regular fa-bookmark text-gray-500"></i>
+            <span>장소 저장하기</span>
+          </button>
+          {% endif %}
+        </form>
       </div>
  
       <div class="grow"></div>
@@ -217,70 +275,153 @@
   </div>
 </div>
 <div class="lg:hidden bg-white fixed bottom-0 w-full z-10	">
-  <button type="submit" class="flex items-center justify-center gap-2 text-gray-800 dark:text-white hover:bg-gray-50 font-medium text-base py-4 dark:hover:bg-gray-700 focus:outline-none dark:focus:ring-gray-800 w-full border-t-2 border-gray-100">
-    <i class="fa-regular fa-bookmark text-gray-500"></i>
-    <span>장소 저장하기</span>
-  </button>
+  <form action="{% url 'places:bookmark' place.pk %}" method="POST">
+    {% csrf_token %}
+    {% if request.user in place.bookmark.all %}
+    <button type="submit" class="flex items-center justify-center gap-2 text-gray-800 dark:text-white hover:bg-gray-50 font-medium text-base py-4 dark:hover:bg-gray-700 focus:outline-none dark:focus:ring-gray-800 w-full border-t-2 border-gray-100">
+      <i class="fa-solid fa-bookmark text-primary-700"></i>
+      <span>장소 저장하기 취소</span>
+    </button>
+    {% else %}
+    <button type="submit" class="flex items-center justify-center gap-2 text-gray-800 dark:text-white hover:bg-gray-50 font-medium text-base py-4 dark:hover:bg-gray-700 focus:outline-none dark:focus:ring-gray-800 w-full border-t-2 border-gray-100">
+      <i class="fa-regular fa-bookmark text-gray-500"></i>
+      <span>장소 저장하기</span>
+    </button>
+    {% endif %}
+  </form>
 </div>
 {% endblock content %}
 
 {% block js %}
-<script type="text/javascript" src="//dapi.kakao.com/v2/maps/sdk.js?appkey='api-key'&libraries=services"></script>
+<script type="text/javascript" src="//dapi.kakao.com/v2/maps/sdk.js?appkey={{MAP_API_KEY}}&libraries=services"></script>
 <script>
-  const container = document.getElementById('map');
-  const containerRight = document.getElementById('map-right');
-  const options = {
-    center: new kakao.maps.LatLng(37.485334478647, 126.93590768893),
-    level: 3
-  };
+  const container = document.getElementById('map')
+  const containerRight = document.getElementById('map-right')
+  const placeAddress = document.querySelector('#place-address').innerText
+  const REST_API_KEY = '{{REST_API_KEY}}'
+  const headers = new Headers({'Authorization': `KakaoAK ${REST_API_KEY}`})
 
-  let map = new kakao.maps.Map(container, options);
-  let mapRight = new kakao.maps.Map(containerRight, options);
-  let markerPosition  = new kakao.maps.LatLng(37.485334478647, 126.93590768893); 
+  fetch(`https://dapi.kakao.com/v2/local/search/address.json?query=${placeAddress}`, {
+      headers
+  }).then(res => res.json())
+  .then(data => {
+    try {
+      var lat = data.documents[0].road_address.y
+      var lng = data.documents[0].road_address.x
 
-  // 마커를 생성합니다
-  let marker = new kakao.maps.Marker({
-      position: markerPosition
-  });
+      const options = {
+        center: new kakao.maps.LatLng(lat, lng),
+        level: 3
+      };
 
-  let markerRight = new kakao.maps.Marker({
-      position: markerPosition
-  });
+      let map = new kakao.maps.Map(container, options)
+      let mapRight = new kakao.maps.Map(containerRight, options)
+      let markerPosition  = new kakao.maps.LatLng(lat, lng)
 
-  map.setZoomable(false);  
-  mapRight.setZoomable(false)
+      // 마커를 생성합니다
+      let marker = new kakao.maps.Marker({
+          position: markerPosition
+      });
 
-  // 마커가 지도 위에 표시되도록 설정합니다
-  marker.setMap(map);
-  markerRight.setMap(mapRight);
+      let markerRight = new kakao.maps.Marker({
+          position: markerPosition
+      });
 
-  window.addEventListener("resize", function() {
-    // window resize시 처리
-    map = new kakao.maps.Map(container, options);
-    mapRight = new kakao.maps.Map(containerRight, options);
-    markerPosition  = new kakao.maps.LatLng(37.485334478647, 126.93590768893); 
+      map.setZoomable(false);  
+      mapRight.setZoomable(false)
 
-    // 마커를 생성합니다
-    marker = new kakao.maps.Marker({
-        position: markerPosition
-    });
-    markerRight = new kakao.maps.Marker({
-        position: markerPosition
-    });
+      // 마커가 지도 위에 표시되도록 설정합니다
+      marker.setMap(map);
+      markerRight.setMap(mapRight);
 
-    // 마우스 휠로 지도 확대,축소 가능여부를 설정합니다
-    map.setZoomable(false);    
-    mapRight.setZoomable(false);    
-    // 마커가 지도 위에 표시되도록 설정합니다
-    marker.setMap(map);
-    markerRight.setMap(mapRight);
+      window.addEventListener("resize", function() {
+        // window resize시 처리
+        map = new kakao.maps.Map(container, options);
+        mapRight = new kakao.maps.Map(containerRight, options);
+        markerPosition  = new kakao.maps.LatLng(lat, lng); 
+
+        // 마커를 생성합니다
+        marker = new kakao.maps.Marker({
+            position: markerPosition
+        });
+        markerRight = new kakao.maps.Marker({
+            position: markerPosition
+        });
+
+        // 마우스 휠로 지도 확대,축소 가능여부를 설정합니다
+        map.setZoomable(false);    
+        mapRight.setZoomable(false);    
+        // 마커가 지도 위에 표시되도록 설정합니다
+        marker.setMap(map);
+        markerRight.setMap(mapRight);
+      })
+    } catch (err) {
+      let lat = 33.450701
+      let lng = 126.570667
+
+      const options = {
+        center: new kakao.maps.LatLng(lat, lng),
+        level: 3
+      };
+
+      let map = new kakao.maps.Map(container, options)
+      let mapRight = new kakao.maps.Map(containerRight, options)
+      let markerPosition  = new kakao.maps.LatLng(lat, lng)
+
+      // 마커를 생성합니다
+      let marker = new kakao.maps.Marker({
+          position: markerPosition
+      });
+
+      let markerRight = new kakao.maps.Marker({
+          position: markerPosition
+      });
+
+      map.setZoomable(false);  
+      mapRight.setZoomable(false)
+
+      // 마커가 지도 위에 표시되도록 설정합니다
+      marker.setMap(map);
+      markerRight.setMap(mapRight);
+
+      window.addEventListener("resize", function() {
+        // window resize시 처리
+        map = new kakao.maps.Map(container, options);
+        mapRight = new kakao.maps.Map(containerRight, options);
+        markerPosition  = new kakao.maps.LatLng(lat, lng); 
+
+        // 마커를 생성합니다
+        marker = new kakao.maps.Marker({
+            position: markerPosition
+        });
+        markerRight = new kakao.maps.Marker({
+            position: markerPosition
+        });
+
+        // 마우스 휠로 지도 확대,축소 가능여부를 설정합니다
+        map.setZoomable(false);    
+        mapRight.setZoomable(false);    
+        // 마커가 지도 위에 표시되도록 설정합니다
+        marker.setMap(map);
+        markerRight.setMap(mapRight);
+      })
+    }
   })
+
 </script>
 <script>
   function elapsedTime(date) {
-    const start = new Date(date);
-    const end = new Date();
-  
+    //2023년 5월 3일 2:00 오후
+    const dateString = date;
+    const dateParts = dateString.split(" ");
+    const year = dateParts[0].slice(0, -1)
+    const month = dateParts[1].slice(0, -1)
+    const day = dateParts[2].slice(0, -1)
+    const hourMinute = dateParts[3].split(":");
+    const hour = parseInt(hourMinute[0]) + (dateParts[-1] === "오후" ? 12 : 0);
+    const minute = parseInt(hourMinute[1])
+    const start = new Date(year, month-1, day, hour, minute);
+    const end = new Date();    
     const diff = (end - start) / 1000;
     
     const times = [
@@ -309,16 +450,18 @@
   const bodyTag = document.querySelector('body')
     
   try {
-    const reviewMoreIcon = document.querySelector('#review-more-icon')
-    const reviewMoreModal = document.querySelector('#review-more-modal')
-    reviewMoreIcon.addEventListener('click', (event) => {
-      reviewMoreModal.classList.remove('hidden')
-    })
+    const reviewMoreIcon = document.querySelectorAll('.review-more-icons')
+    reviewMoreIcon.forEach((item)=>{
+      const reviewMoreModal = item.querySelector('.review-more-modals')
+      item.addEventListener('click', (event) => {
+         reviewMoreModal.classList.remove('hidden')
+      })
 
-    bodyTag.addEventListener('mouseup', (event) => {
-      if (!reviewMoreModal.contains(event.target)) {
-        reviewMoreModal.classList.add('hidden')
-      }
+      bodyTag.addEventListener('mouseup', (event) => {
+        if (!reviewMoreModal.contains(event.target)) {
+          reviewMoreModal.classList.add('hidden')
+        }
+      })
     })
   } catch(err) {
   }
@@ -327,6 +470,10 @@
     if (window.confirm('삭제하시겠습니까?')) {
       alert('삭제되었습니다.')
     } 
+  }
+
+  const drawStar = (target) => {
+    document.querySelector(`.stars span`).style.width = `${target.value * 20}%`;
   }
   
 </script>
