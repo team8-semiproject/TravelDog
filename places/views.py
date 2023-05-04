@@ -169,10 +169,10 @@ def review_update(request, place_pk, review_pk):
             raw = list(request.POST.keys())
             data = json.loads(raw[0])
             review.content = data['content']
-            review.star = data['star']
+            # review.star = data['star']
             review.save()
     context = {
         'content': review.content,
-        'star': review.star,
+        # 'star': review.star,
     }
-    return JsonResponse
+    return JsonResponse(context)
