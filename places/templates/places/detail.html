@@ -263,17 +263,24 @@
           <div id="map-right" class="h-full"></div>
         </div>
         <form id="place-bookmarkform" data-place-id="{{ place.pk }}">
-          {% csrf_token %}
-          {% if request.user in place.bookmark.all %}
-          <button type="submit" class="flex items-center justify-center gap-2 text-gray-800 dark:text-white hover:bg-gray-50 font-medium text-base px-4 lg:px-5 py-2 lg:py-2.5 mr-2 dark:hover:bg-gray-700 focus:outline-none dark:focus:ring-gray-800 w-full border-t-2 border-gray-100">
-            <i class="fa-solid fa-bookmark text-primary-700"></i>
-            <span>장소 저장하기 취소</span>
-          </button>
+          {% if request.user.is_authenticated %}
+            {% csrf_token %}
+            {% if request.user in place.bookmark.all %}
+            <button type="submit" class="flex items-center justify-center gap-2 text-gray-800 dark:text-white hover:bg-gray-50 font-medium text-base px-4 lg:px-5 py-2 lg:py-2.5 mr-2 dark:hover:bg-gray-700 focus:outline-none dark:focus:ring-gray-800 w-full border-t-2 border-gray-100">
+              <i class="fa-solid fa-bookmark text-primary-700"></i>
+              <span>장소 저장하기 취소</span>
+            </button>
+            {% else %}
+            <button type="submit" class="flex items-center justify-center gap-2 text-gray-800 dark:text-white hover:bg-gray-50 font-medium text-base px-4 lg:px-5 py-2 lg:py-2.5 mr-2 dark:hover:bg-gray-700 focus:outline-none dark:focus:ring-gray-800 w-full border-t-2 border-gray-100">
+              <i class="fa-regular fa-bookmark text-gray-500"></i>
+              <span>장소 저장하기</span>
+            </button>
+            {% endif %}
           {% else %}
-          <button type="submit" class="flex items-center justify-center gap-2 text-gray-800 dark:text-white hover:bg-gray-50 font-medium text-base px-4 lg:px-5 py-2 lg:py-2.5 mr-2 dark:hover:bg-gray-700 focus:outline-none dark:focus:ring-gray-800 w-full border-t-2 border-gray-100">
+          <a href="{% url 'accounts:login' %}" class="flex items-center justify-center gap-2 text-gray-800 dark:text-white hover:bg-gray-50 font-medium text-base px-4 lg:px-5 py-2 lg:py-2.5 mr-2 dark:hover:bg-gray-700 focus:outline-none dark:focus:ring-gray-800 w-full border-t-2 border-gray-100">
             <i class="fa-regular fa-bookmark text-gray-500"></i>
             <span>장소 저장하기</span>
-          </button>
+          </a>
           {% endif %}
         </form>
       </div>
@@ -284,17 +291,24 @@
 </div>
 <div class="lg:hidden bg-white fixed bottom-0 w-full z-10	">
   <form id="place-bookmarkform-small" data-place-id="{{ place.pk }}">
-    {% csrf_token %}
-    {% if request.user in place.bookmark.all %}
-    <button type="submit" class="flex items-center justify-center gap-2 text-gray-800 dark:text-white hover:bg-gray-50 font-medium text-base py-4 dark:hover:bg-gray-700 focus:outline-none dark:focus:ring-gray-800 w-full border-t-2 border-gray-100">
-      <i class="fa-solid fa-bookmark text-primary-700"></i>
-      <span>장소 저장하기 취소</span>
-    </button>
+    {% if request.user.is_authenticated %}
+      {% csrf_token %}
+      {% if request.user in place.bookmark.all %}
+      <button type="submit" class="flex items-center justify-center gap-2 text-gray-800 dark:text-white hover:bg-gray-50 font-medium text-base py-4 dark:hover:bg-gray-700 focus:outline-none dark:focus:ring-gray-800 w-full border-t-2 border-gray-100">
+        <i class="fa-solid fa-bookmark text-primary-700"></i>
+        <span>장소 저장하기 취소</span>
+      </button>
+      {% else %}
+      <button type="submit" class="flex items-center justify-center gap-2 text-gray-800 dark:text-white hover:bg-gray-50 font-medium text-base py-4 dark:hover:bg-gray-700 focus:outline-none dark:focus:ring-gray-800 w-full border-t-2 border-gray-100">
+        <i class="fa-regular fa-bookmark text-gray-500"></i>
+        <span>장소 저장하기</span>
+      </button>
+      {% endif %}
     {% else %}
-    <button type="submit" class="flex items-center justify-center gap-2 text-gray-800 dark:text-white hover:bg-gray-50 font-medium text-base py-4 dark:hover:bg-gray-700 focus:outline-none dark:focus:ring-gray-800 w-full border-t-2 border-gray-100">
-      <i class="fa-regular fa-bookmark text-gray-500"></i>
-      <span>장소 저장하기</span>
-    </button>
+      <a href="{% url 'accounts:login' %}" class="flex items-center justify-center gap-2 text-gray-800 dark:text-white hover:bg-gray-50 font-medium text-base py-4 dark:hover:bg-gray-700 focus:outline-none dark:focus:ring-gray-800 w-full border-t-2 border-gray-100">
+        <i class="fa-regular fa-bookmark text-gray-500"></i>
+        <span>장소 저장하기</span>
+      </a>
     {% endif %}
   </form>
 </div>
