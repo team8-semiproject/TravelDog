@@ -2,6 +2,8 @@ import json
 from django.conf import settings
 from django.contrib.auth.decorators import login_required
 from django.core.paginator import Paginator
+from django.db.models.signals import post_delete, pre_save
+from django.dispatch import receiver
 from django.forms import modelformset_factory
 from django.http import JsonResponse
 from django.shortcuts import redirect, render, get_object_or_404
@@ -28,26 +30,21 @@ def index(request):
 
 def create(request):
     if request.user.is_staff:
-        PhotoFormSet = modelformset_factory(Photo, form=PhotoForm, extra=3)
-
         if request.method == 'POST':
             form = PlaceForm(request.POST)
-            formset = PhotoFormSet(request.POST, request.FILES, queryset=Photo.objects.none())
-
-            if form.is_valid() and formset.is_valid():
+            photos = request.FILES.getlist('photo')
+            if form.is_valid():
                 place = form.save()
-                for photoform in formset.cleaned_data:
-                    if photoform:
-                        photo = Photo(place=place, photo=photoform['photo'])
-                        photo.save()
-                return redirect('places:index')
+                if photos:
+                    for photo in photos:
+                        Photo.objects.create(place=place, photo=photo)
+            return redirect('places:index')
         else:
             form = PlaceForm()
-            formset = PhotoFormSet(queryset=Photo.objects.none())
-
+            photoform = PhotoForm()
         context = {
             'form': form,
-            'formset': formset,
+            'photoform': photoform,
         }
         return render(request, 'places/create.html', context)
     return redirect('places:index')
@@ -91,7 +88,7 @@ def bookmark(request, place_pk):
 
 def update(request, place_pk):
     if request.user.is_staff:
-        PhotoFormSet = modelformset_factory(Photo, form=PhotoForm, extra=3)
+        PhotoFormSet = modelformset_factory(Photo, form=PhotoForm)
         place = get_object_or_404(Place, pk=place_pk)
 
         if request.method == 'POST':
@@ -100,9 +97,11 @@ def update(request, place_pk):
 
             if form.is_valid() and formset.is_valid():
                 form.save()
+                old_photos = Photo.objects.filter(place=place)
                 for photoform in formset.cleaned_data:
                     if photoform:
                         photo = Photo(place=place, photo=photoform['photo'])
+                        pre_save_photo(Photo, photo)
                         photo.save()
                 return redirect('places:detail', place.pk)
 
@@ -112,18 +111,45 @@ def update(request, place_pk):
             'place': place,
             'form': form,
             'formset': formset,
-            'place': place,
         }
         return render(request, 'places/update.html', context)
     return redirect('places:detail', place.pk)
 
 
+@receiver(pre_save, sender=Photo)
+def pre_save_photo(sender, instance, *args, **kwargs):
+    try:
+        old_photo = instance.__class__.objects.get(pk=instance.pk).photo.path
+        try:
+            new_photo = instance.photo.path
+        except:
+            new_photo = None
+        if new_photo != old_photo:
+            import os
+            if os.path.exists(old_photo):
+                os.remove(old_photo)
+    except:
+        pass
+
+
 def delete(request, place_pk):
     if request.user.is_staff:
         place = get_object_or_404(Place, pk=place_pk)
+        photos = Photo.objects.filter(place=place)
+        if photos:
+            for photo in photos:
+                post_save_photo(Photo, photo)
         place.delete()
         return redirect('places:index')
     return redirect('places:detail', place_pk)
+
+
+@receiver(post_delete, sender=Photo)
+def post_save_photo(sender, instance, *args, **kwargs):
+    try:
+        instance.photo.delete(save=False)
+    except:
+        pass
 
 
 @login_required
