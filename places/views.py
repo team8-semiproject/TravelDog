@@ -56,11 +56,14 @@ def detail(request, place_pk):
     per_page = 8
     paginator = Paginator(reviews, per_page)
     page_object = paginator.get_page(page)
+    review_form = ReviewForm()
 
     context = {
         'place': place,
         'reviews': page_object,
         'range': ['1', '2', '3', '4', '5'],
+        'num_range': range(1,6),
+        'review_form': review_form,
     }
     return render(request, 'places/detail.html', context)
 
@@ -81,7 +84,7 @@ def update(request, place_pk):
         place = get_object_or_404(Place, pk=place_pk)
 
         if request.method == 'POST':
-            form = PlaceForm(request.POST, instance=request.data)
+            form = PlaceForm(request.POST, request.FILES, instance=place)
             formset = PhotoFormSet(request.POST, request.FILES, queryset=Photo.objects.filter(place=place))
 
             if form.is_valid() and formset.is_valid():
@@ -97,6 +100,7 @@ def update(request, place_pk):
         context = {
             'form': form,
             'formset': formset,
+            'place': place,
         }
         return render(request, 'places/update.html', context)
     return redirect('places:detail', place_pk)
@@ -113,16 +117,23 @@ def delete(request, place_pk):
 @login_required
 def review_create(request, place_pk):
     place = get_object_or_404(Place, pk=place_pk)
-    form = ReviewForm(request.POST)
-    if form.is_valid():
-        review = form.save(commit = False)
-        review.place = place
-        review.user = request.user
-        review.save()
-        return redirect('places:detail', place_pk)
+    # form = ReviewForm(request.POST)
+    # if form.is_valid():
+    #     review = form.save(commit = False)
+    #     review.place = place
+    #     review.user = request.user
+    #     review.save()
+    #     return redirect('places:detail', place_pk)
+    star = request.POST.get('star')
+    content = request.POST.get('content')
+
+    review = Review(star=star, content=content, place=place, user=request.user)
+    review.save()
+    return redirect('places:detail', place_pk)
+
     context = {
         'place': place,
-        'form': form,
+        # 'form': form,
     }
     return render(request, 'places/review.html', context)
 

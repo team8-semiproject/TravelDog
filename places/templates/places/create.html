@@ -1,0 +1,22 @@
+{% extends 'base.html' %}
+{% load tailwind_filters %}
+{% block content %}
+<section class="bg-white dark:bg-gray-900">
+  <div class="py-8 px-4 mx-auto max-w-screen-xl lg:py-16 lg:px-6">
+    <div class="max-w-screen-lg text-gray-500 sm:text-lg dark:text-gray-400">
+      <div class="mb-8">
+        <h2 class="mb-4 text-4xl tracking-tight font-bold text-gray-900 dark:text-white">플레이스 등록하기</h2>
+      </div>
+      <form action="{% url 'places:create' %}" method="POST" enctype="multipart/form-data">
+        {% csrf_token %}
+        {{ form|crispy }}
+        {{ formset.management_form }}
+        {% for photoform in formset %}
+          {{photoform|crispy}}
+        {% endfor %}
+        <button type="submit" class="text-white bg-primary-700 hover:bg-primary-800 focus:ring-4 focus:ring-primary-300 font-medium rounded-lg text-sm px-4 lg:px-5 py-2 lg:py-2.5 mr-2 dark:bg-primary-600 dark:hover:bg-primary-700 focus:outline-none dark:focus:ring-primary-800 mt-8">등록하기</button>
+      </form>
+    </div>
+  </div>
+</section>
+{% endblock content %}
