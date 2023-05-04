@@ -66,7 +66,7 @@
       <h2 class="text-3xl font-bold tracking-tight text-gray-900 sm:text-4xl">{{place.name}}</h2>
       <div class="flex gap-2 mt-4">
         <i class="fa-solid fa-location-dot text-primary-700 mt-1"></i>
-        <p id="place-address" class="text-gray-500">{{place.address}}<span class="hidden">{{place.latitude}} {{place.longtitude}}</span></p>
+        <p id="place-address" class="text-gray-500">{{place.address}}</p>
       </div>
       {% with avg_ratings=place.avg_ratings %}
         {% if not avg_ratings.star__avg %}
@@ -293,65 +293,6 @@
 {% endblock content %}
 
 {% block js %}
-{% comment %} <script type="text/javascript" src="//dapi.kakao.com/v2/maps/sdk.js?appkey='api-key'&libraries=services"></script> {% endcomment %}
-{% comment %} <script type="text/javascript" src="//dapi.kakao.com/v2/maps/sdk.js?appkey=0c2e7f90fd6d72041910f22b2784a9a1&libraries=services"></script>
-<script>
-  const container = document.getElementById('map')
-  const containerRight = document.getElementById('map-right')
-  const placeAddress = document.querySelector('#place-address span.hidden').innerText.split(' ')
-  let lat = 33.450701
-  let lng = 126.570667
-  if (placeAddress && placeAddress[0] != 0 && placeAddress[1] != 0 ) {
-    lat = parseFloat(placeAddress[0])
-    lng = parseFloat(placeAddress[1])
-  }
-  const options = {
-    center: new kakao.maps.LatLng(lat, lng),
-    level: 3
-  };
-
-  let map = new kakao.maps.Map(container, options)
-  let mapRight = new kakao.maps.Map(containerRight, options)
-  let markerPosition  = new kakao.maps.LatLng(lat, lng)
-
-  // 마커를 생성합니다
-  let marker = new kakao.maps.Marker({
-      position: markerPosition
-  });
-
-  let markerRight = new kakao.maps.Marker({
-      position: markerPosition
-  });
-
-  map.setZoomable(false);  
-  mapRight.setZoomable(false)
-
-  // 마커가 지도 위에 표시되도록 설정합니다
-  marker.setMap(map);
-  markerRight.setMap(mapRight);
-
-  window.addEventListener("resize", function() {
-    // window resize시 처리
-    map = new kakao.maps.Map(container, options);
-    mapRight = new kakao.maps.Map(containerRight, options);
-    markerPosition  = new kakao.maps.LatLng(lat, lng); 
-
-    // 마커를 생성합니다
-    marker = new kakao.maps.Marker({
-        position: markerPosition
-    });
-    markerRight = new kakao.maps.Marker({
-        position: markerPosition
-    });
-
-    // 마우스 휠로 지도 확대,축소 가능여부를 설정합니다
-    map.setZoomable(false);    
-    mapRight.setZoomable(false);    
-    // 마커가 지도 위에 표시되도록 설정합니다
-    marker.setMap(map);
-    markerRight.setMap(mapRight);
-  })
-</script> {% endcomment %}
 <script type="text/javascript" src="//dapi.kakao.com/v2/maps/sdk.js?appkey={{MAP_API_KEY}}&libraries=services"></script>
 <script>
   const container = document.getElementById('map')
