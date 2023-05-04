@@ -1,8 +1,10 @@
+import json
 from django.conf import settings
 from django.contrib.auth.decorators import login_required
 from django.core.paginator import Paginator
 from django.forms import modelformset_factory
-from django.shortcuts import redirect, render, get_list_or_404, get_object_or_404
+from django.http import JsonResponse
+from django.shortcuts import redirect, render, get_object_or_404
 from .forms import PlaceForm, PhotoForm, ReviewForm
 from .models import Place, Photo, Review
 
@@ -76,9 +78,15 @@ def bookmark(request, place_pk):
     place = get_object_or_404(Place, pk=place_pk)
     if place.bookmark.filter(pk=request.user.pk).exists():
         place.bookmark.remove(request.user)
+        bookmarked = False
     else:
         place.bookmark.add(request.user)
-    return redirect('places:detail', place.pk)
+        bookmarked = True
+    context = {
+        'bookmarked': bookmarked,
+        'bookmark_count': place.bookmark.count(),
+    }
+    return JsonResponse(context)
 
 
 def update(request, place_pk):
@@ -121,13 +129,6 @@ def delete(request, place_pk):
 @login_required
 def review_create(request, place_pk):
     place = get_object_or_404(Place, pk=place_pk)
-    # form = ReviewForm(request.POST)
-    # if form.is_valid():
-    #     review = form.save(commit = False)
-    #     review.place = place
-    #     review.user = request.user
-    #     review.save()
-    #     return redirect('places:detail', place_pk)
     star = request.POST.get('star')
     content = request.POST.get('content')
 
@@ -135,21 +136,21 @@ def review_create(request, place_pk):
     review.save()
     return redirect('places:detail', place_pk)
 
-    context = {
-        'place': place,
-        # 'form': form,
-    }
-    return render(request, 'places/review.html', context)
-
 
 @login_required
 def review_like(request, place_pk, review_pk):
     review = get_object_or_404(Review, pk=review_pk)
     if review.like.filter(pk=request.user.pk).exists():
         review.like.remove(request.user)
+        is_liked = False
     else:
         review.like.add(request.user)
-    return redirect('places:detail', place_pk)
+        is_liked = True
+    context = {
+        'is_liked': is_liked,
+        'likes_count': review.like.count()
+    }
+    return JsonResponse(context)
 
 
 @login_required
@@ -158,3 +159,20 @@ def review_delete(request, place_pk, review_pk):
     if review.user == request.user:
         review.delete()
     return redirect('places:detail', place_pk)
+
+
+@login_required
+def review_update(request, place_pk, review_pk):
+    review = get_object_or_404(Review, pk=review_pk)
+    if request.user == review.user:
+        if request.method == 'POST':
+            raw = list(request.POST.keys())
+            data = json.loads(raw[0])
+            review.content = data['content']
+            review.star = data['star']
+            review.save()
+    context = {
+        'content': review.content,
+        'star': review.star,
+    }
+    return JsonResponse
