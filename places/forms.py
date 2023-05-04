@@ -1,7 +1,6 @@
 from django import forms
 from .models import Place, Photo, Review
 
-
 class PlaceForm(forms.ModelForm):
     class Meta:
         model = Place
@@ -15,6 +14,9 @@ class PhotoForm(forms.ModelForm):
 
 
 class ReviewForm(forms.ModelForm):
+  
+    star = forms.IntegerField(widget=forms.NumberInput(attrs={'min': 1, 'max': 5, 'id': 'starRange'}))
+
     class Meta:
         model = Review
-        fields = ('content', 'star',)
+        fields = ('star', 'content',)

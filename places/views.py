@@ -58,6 +58,7 @@ def detail(request, place_pk):
     per_page = 8
     paginator = Paginator(reviews, per_page)
     page_object = paginator.get_page(page)
+    review_form = ReviewForm()
 
     context = {
         'place': place,
@@ -65,6 +66,7 @@ def detail(request, place_pk):
         'range': ['1', '2', '3', '4', '5'],
         'MAP_API_KEY': settings.MAP_API_KEY,
         'REST_API_KEY': settings.REST_API_KEY,
+        'num_range': range(1,6),
     }
     return render(request, 'places/detail.html', context)
 
@@ -102,6 +104,7 @@ def update(request, place_pk):
             'place': place,
             'form': form,
             'formset': formset,
+            'place': place,
         }
         return render(request, 'places/update.html', context)
     return redirect('places:detail', place.pk)
@@ -118,16 +121,23 @@ def delete(request, place_pk):
 @login_required
 def review_create(request, place_pk):
     place = get_object_or_404(Place, pk=place_pk)
-    form = ReviewForm(request.POST)
-    if form.is_valid():
-        review = form.save(commit = False)
-        review.place = place
-        review.user = request.user
-        review.save()
-        return redirect('places:detail', place_pk)
+    # form = ReviewForm(request.POST)
+    # if form.is_valid():
+    #     review = form.save(commit = False)
+    #     review.place = place
+    #     review.user = request.user
+    #     review.save()
+    #     return redirect('places:detail', place_pk)
+    star = request.POST.get('star')
+    content = request.POST.get('content')
+
+    review = Review(star=star, content=content, place=place, user=request.user)
+    review.save()
+    return redirect('places:detail', place_pk)
+
     context = {
         'place': place,
-        'form': form,
+        # 'form': form,
     }
     return render(request, 'places/review.html', context)
 
