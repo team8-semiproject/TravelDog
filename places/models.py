@@ -6,8 +6,6 @@ from django.db.models import Avg
 class Place(models.Model):
     name = models.CharField(max_length=30)
     address = models.CharField(max_length=100)
-    latitude = models.FloatField()
-    longtitude = models.FloatField()
     bookmark = models.ManyToManyField(settings.AUTH_USER_MODEL, related_name='bookmarked_places', blank=True)
 
     def __str__(self):
