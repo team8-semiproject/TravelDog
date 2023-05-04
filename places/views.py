@@ -12,7 +12,7 @@ def index_redirect(request):
 
 
 def index(request):
-    places = get_list_or_404(Place)
+    places = Place.objects.all()
     page = request.GET.get('page', '1')
     per_page = 16
     paginator = Paginator(places, per_page)
