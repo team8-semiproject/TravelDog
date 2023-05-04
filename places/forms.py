@@ -5,7 +5,7 @@ from .models import Place, Photo, Review
 class PlaceForm(forms.ModelForm):
     class Meta:
         model = Place
-        fields = ('name', 'address', 'latitude', 'longtitude',)
+        fields = ('name', 'address',)
 
 
 class PhotoForm(forms.ModelForm):

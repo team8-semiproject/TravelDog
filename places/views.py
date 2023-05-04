@@ -1,14 +1,15 @@
+from django.conf import settings
 from django.contrib.auth.decorators import login_required
+from django.core.paginator import Paginator
 from django.forms import modelformset_factory
 from django.shortcuts import redirect, render, get_list_or_404, get_object_or_404
-from django.utils.decorators import method_decorator
-from django.views import View
 from .forms import PlaceForm, PhotoForm, ReviewForm
 from .models import Place, Photo, Review
-from django.core.paginator import Paginator
+
 
 def index_redirect(request):
     return redirect('places:index')
+
 
 def index(request):
     places = get_list_or_404(Place)
@@ -41,6 +42,7 @@ def create(request):
         else:
             form = PlaceForm()
             formset = PhotoFormSet(queryset=Photo.objects.none())
+
         context = {
             'form': form,
             'formset': formset,
@@ -61,6 +63,8 @@ def detail(request, place_pk):
         'place': place,
         'reviews': page_object,
         'range': ['1', '2', '3', '4', '5'],
+        'MAP_API_KEY': settings.MAP_API_KEY,
+        'REST_API_KEY': settings.REST_API_KEY,
     }
     return render(request, 'places/detail.html', context)
 
@@ -81,25 +85,26 @@ def update(request, place_pk):
         place = get_object_or_404(Place, pk=place_pk)
 
         if request.method == 'POST':
-            form = PlaceForm(request.POST, instance=request.data)
+            form = PlaceForm(request.POST, instance=place)
             formset = PhotoFormSet(request.POST, request.FILES, queryset=Photo.objects.filter(place=place))
 
             if form.is_valid() and formset.is_valid():
                 form.save()
                 for photoform in formset.cleaned_data:
                     if photoform:
-                        photo = Photo(place=form, photo=photoform['photo'])
+                        photo = Photo(place=place, photo=photoform['photo'])
                         photo.save()
                 return redirect('places:detail', place.pk)
-        else:
-            form = PlaceForm(instance=place)
-            formset = PhotoFormSet(queryset=Photo.objects.filter(place=place))
+
+        form = PlaceForm(instance=place)
+        formset = PhotoFormSet(queryset=Photo.objects.filter(place=place))
         context = {
+            'place': place,
             'form': form,
             'formset': formset,
         }
         return render(request, 'places/update.html', context)
-    return redirect('places:detail', place_pk)
+    return redirect('places:detail', place.pk)
 
 
 def delete(request, place_pk):
@@ -125,6 +130,7 @@ def review_create(request, place_pk):
         'form': form,
     }
     return render(request, 'places/review.html', context)
+
 
 @login_required
 def review_like(request, place_pk, review_pk):
