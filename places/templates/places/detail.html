@@ -426,10 +426,10 @@
     const month = dateParts[1].slice(0, -1)
     const day = dateParts[2].slice(0, -1)
     const hourMinute = dateParts[3].split(":");
-    const hour = parseInt(hourMinute[0]) + (dateParts[-1] === "오후" ? 12 : 0);
+    const hour = parseInt(hourMinute[0]) + (dateParts[4] === "오후" ? 12 : 0);
     const minute = parseInt(hourMinute[1])
     const start = new Date(year, month-1, day, hour, minute);
-    const end = new Date();    
+    const end = new Date();  
     const diff = (end - start) / 1000;
     
     const times = [
