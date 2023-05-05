@@ -8,7 +8,14 @@ class PlaceForm(forms.ModelForm):
 
 
 class PhotoForm(forms.ModelForm):
-    photo = forms.FileField(widget=forms.ClearableFileInput(attrs={'multiple': True}))
+    photo = forms.ImageField(widget=forms.FileInput(attrs={'multiple': True}))
+    class Meta:
+        model = Photo
+        fields = ('photo',)
+
+
+class PhotoUpdateForm(forms.ModelForm):
+    photo = forms.ImageField(widget=forms.ClearableFileInput)
     class Meta:
         model = Photo
         fields = ('photo',)
