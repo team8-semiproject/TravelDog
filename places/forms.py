@@ -1,6 +1,7 @@
 from django import forms
 from .models import Place, Photo, Review
 
+
 class PlaceForm(forms.ModelForm):
     class Meta:
         model = Place

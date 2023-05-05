@@ -7,7 +7,7 @@ from django.dispatch import receiver
 from django.forms import modelformset_factory
 from django.http import JsonResponse
 from django.shortcuts import redirect, render, get_object_or_404
-from .forms import PlaceForm, PhotoForm, ReviewForm, PhotoUpdateForm
+from .forms import PlaceForm, PhotoForm, PhotoUpdateForm
 from .models import Place, Photo, Review
 
 
@@ -201,10 +201,8 @@ def review_update(request, place_pk, review_pk):
             raw = list(request.POST.keys())
             data = json.loads(raw[0])
             review.content = data['content']
-            # review.star = data['star']
             review.save()
     context = {
         'content': review.content,
-        # 'star': review.star,
     }
     return JsonResponse(context)
