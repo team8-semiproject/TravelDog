@@ -1,26 +1,19 @@
-# imports
+from django.contrib.auth import get_user_model, update_session_auth_hash
+from django.contrib.auth import (
+    login as auth_login,
+    logout as auth_logout,
+)
+from django.contrib.auth.decorators import login_required
 from django.shortcuts import render, redirect
-
 from .forms import (
     CustomAuthenticationForm as AuthenticationForm, 
     CustomPasswordChangeForm as PasswordChangeForm,
     CustomUserChangeForm as UserChangeForm,
     CustomUserCreationForm as UserCreationForm,
 )
-from django.contrib.auth import (
-    login as auth_login,
-    logout as auth_logout,
-)
-from django.contrib.auth import get_user_model, update_session_auth_hash
 
-from django.contrib.auth.decorators import login_required
-
-from django.http import JsonResponse
-
-# Create your views here.
 
 def signup(request):
-
     if request.method == "POST":
         print("request", request.POST)
         form = UserCreationForm(data=request.POST)
@@ -28,7 +21,6 @@ def signup(request):
             user = form.save()
             auth_login(request, user)
             return redirect('places:index')
-            # return redirect('places:places-list')
     else:
         form = UserCreationForm()
     context = {
@@ -43,7 +35,6 @@ def login(request):
         if form.is_valid():
             auth_login(request, form.get_user())
             return redirect('places:index')
-            # return redirect('places:places-list')
     else:
         form = AuthenticationForm()
     context = {
@@ -56,7 +47,6 @@ def login(request):
 def logout(request):
     auth_logout(request)
     return redirect('places:index')
-    # return redirect('places:places-list')
 
 
 def profile(request, username):
