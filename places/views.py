@@ -106,7 +106,6 @@ def update(request, place_pk):
             formset.save()
 
             for new_photo in new_photos:
-                print(new_photo)
                 Photo.objects.create(place=updated_place, photo=new_photo)
 
             return redirect('places:detail', place.pk)
