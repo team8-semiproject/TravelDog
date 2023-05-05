@@ -1,4 +1,4 @@
-import json
+import json, os
 from django.conf import settings
 from django.contrib.auth.decorators import login_required
 from django.core.paginator import Paginator
@@ -7,7 +7,7 @@ from django.dispatch import receiver
 from django.forms import modelformset_factory
 from django.http import JsonResponse
 from django.shortcuts import redirect, render, get_object_or_404
-from .forms import PlaceForm, PhotoForm, ReviewForm
+from .forms import PlaceForm, PhotoForm, ReviewForm, PhotoUpdateForm
 from .models import Place, Photo, Review
 
 
@@ -57,7 +57,6 @@ def detail(request, place_pk):
     per_page = 8
     paginator = Paginator(reviews, per_page)
     page_object = paginator.get_page(page)
-    review_form = ReviewForm()
 
     context = {
         'place': place,
@@ -87,33 +86,41 @@ def bookmark(request, place_pk):
 
 
 def update(request, place_pk):
-    if request.user.is_staff:
-        PhotoFormSet = modelformset_factory(Photo, form=PhotoForm)
-        place = get_object_or_404(Place, pk=place_pk)
+    place = get_object_or_404(Place, pk=place_pk)
+    photos = place.photos.all()
 
-        if request.method == 'POST':
-            form = PlaceForm(request.POST, instance=place)
-            formset = PhotoFormSet(request.POST, request.FILES, queryset=Photo.objects.filter(place=place))
+    PhotoFormSet = modelformset_factory(Photo, form=PhotoUpdateForm, can_delete=True, extra=0)
+    photoaddform = PhotoForm()
 
-            if form.is_valid() and formset.is_valid():
-                form.save()
-                old_photos = Photo.objects.filter(place=place)
-                for photoform in formset.cleaned_data:
-                    if photoform:
-                        photo = Photo(place=place, photo=photoform['photo'])
-                        pre_save_photo(Photo, photo)
-                        photo.save()
-                return redirect('places:detail', place.pk)
+    if request.method == 'POST':
+        form = PlaceForm(request.POST, instance=place)
+        formset = PhotoFormSet(request.POST, request.FILES, queryset=photos)
+        new_photos = request.FILES.getlist('photo')
 
+        if form.is_valid() and formset.is_valid():
+            updated_place = form.save()
+            instances = formset.save(commit=False)
+            for instance in instances:
+                instance.place = updated_place
+                instance.save()
+            formset.save()
+
+            for new_photo in new_photos:
+                print(new_photo)
+                Photo.objects.create(place=updated_place, photo=new_photo)
+
+            return redirect('places:detail', place.pk)
+    else:
         form = PlaceForm(instance=place)
-        formset = PhotoFormSet(queryset=Photo.objects.filter(place=place))
-        context = {
-            'place': place,
-            'form': form,
-            'formset': formset,
-        }
-        return render(request, 'places/update.html', context)
-    return redirect('places:detail', place.pk)
+        formset = PhotoFormSet(queryset=photos)
+
+    context = {
+        'form': form,
+        'formset': formset,
+        'place': place,
+        'photoaddform': photoaddform,
+    }
+    return render(request, 'places/update.html', context)
 
 
 @receiver(pre_save, sender=Photo)
@@ -125,7 +132,6 @@ def pre_save_photo(sender, instance, *args, **kwargs):
         except:
             new_photo = None
         if new_photo != old_photo:
-            import os
             if os.path.exists(old_photo):
                 os.remove(old_photo)
     except:
@@ -135,17 +141,17 @@ def pre_save_photo(sender, instance, *args, **kwargs):
 def delete(request, place_pk):
     if request.user.is_staff:
         place = get_object_or_404(Place, pk=place_pk)
-        photos = Photo.objects.filter(place=place)
-        if photos:
-            for photo in photos:
-                post_save_photo(Photo, photo)
+        media_dir = os.path.join(settings.MEDIA_ROOT, 'places', str(place.pk))
         place.delete()
+        if os.path.exists(media_dir):
+            try: os.rmdir(media_dir)
+            except: pass
         return redirect('places:index')
     return redirect('places:detail', place_pk)
 
 
 @receiver(post_delete, sender=Photo)
-def post_save_photo(sender, instance, *args, **kwargs):
+def delete_place_photo(sender, instance, *args, **kwargs):
     try:
         instance.photo.delete(save=False)
     except:
