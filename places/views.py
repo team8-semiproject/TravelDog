@@ -1,4 +1,4 @@
-import json
+import json, os
 from django.conf import settings
 from django.contrib.auth.decorators import login_required
 from django.core.paginator import Paginator
@@ -132,7 +132,6 @@ def pre_save_photo(sender, instance, *args, **kwargs):
         except:
             new_photo = None
         if new_photo != old_photo:
-            import os
             if os.path.exists(old_photo):
                 os.remove(old_photo)
     except:
@@ -142,13 +141,17 @@ def pre_save_photo(sender, instance, *args, **kwargs):
 def delete(request, place_pk):
     if request.user.is_staff:
         place = get_object_or_404(Place, pk=place_pk)
+        media_dir = os.path.join(settings.MEDIA_ROOT, 'places', str(place.pk))
         place.delete()
+        if os.path.exists(media_dir):
+            try: os.rmdir(media_dir)
+            except: pass
         return redirect('places:index')
     return redirect('places:detail', place_pk)
 
 
 @receiver(post_delete, sender=Photo)
-def post_save_photo(sender, instance, *args, **kwargs):
+def delete_place_photo(sender, instance, *args, **kwargs):
     try:
         instance.photo.delete(save=False)
     except:
