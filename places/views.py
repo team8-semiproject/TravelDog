@@ -2,6 +2,7 @@ import json, os
 from django.conf import settings
 from django.contrib.auth.decorators import login_required
 from django.core.paginator import Paginator
+from django.db.models import Avg
 from django.db.models.signals import post_delete, pre_save
 from django.dispatch import receiver
 from django.forms import modelformset_factory
@@ -16,7 +17,8 @@ def index_redirect(request):
 
 
 def index(request):
-    places = Place.objects.all()
+    places = Place.objects.prefetch_related('photos', 'place_reviews', 'bookmark').all()
+    stars = Review.objects.select_related('places').annotate(Avg('star')).order_by('place')
     page = request.GET.get('page', '1')
     per_page = 16
     paginator = Paginator(places, per_page)
@@ -24,6 +26,7 @@ def index(request):
     context = {
         'places': page_object,
         'range': ['1', '2', '3', '4', '5'],
+        'stars': stars,
     }
     return render(request, 'places/index.html', context)
 
@@ -51,8 +54,8 @@ def create(request):
 
 
 def detail(request, place_pk):
-    place = get_object_or_404(Place, pk=place_pk)
-    reviews = Review.objects.filter(place=place)
+    place = Place.objects.prefetch_related('photos', 'bookmark').get(pk=place_pk)
+    reviews = Review.objects.prefetch_related('like', 'user').filter(place=place)
     page = request.GET.get('page', '1')
     per_page = 8
     paginator = Paginator(reviews, per_page)
