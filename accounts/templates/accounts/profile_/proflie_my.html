@@ -1,32 +1,36 @@
 {% load static %}
 
 
-<div class="hidden p-4 bg-white rounded-lg md:p-8 dark:bg-gray-800 flex justify-center flex-col" id="stats" role="tabpanel" aria-labelledby="stats-tab">
-    {% for my_review, my_photo in my_list %}
-    <a href="{% url 'places:detail' my_review.place.pk %}" class="flex flex-col justify-center items-center bg-white border border-gray-200 rounded-lg shadow md:flex-row md:max-w-xl hover:bg-gray-100 dark:border-gray-700 dark:bg-gray-800 dark:hover:bg-gray-700">
-
-        <img class="object-cover w-full rounded-t-lg h-96 md:h-auto md:w-48 md:rounded-none md:rounded-l-lg" src= "{{my_photo.photo.url}}" alt="">
-       
-
-        <div class="flex flex-col justify-between p-4 leading-normal">
-            <h5 class="mb-2 text-2xl font-bold tracking-tight text-gray-900 dark:text-white">{{my_review.content}}</h5>
-            <p class="mb-3 font-normal text-gray-700 dark:text-gray-400">{{my_review.place}}</p>
-            <div class="flex justify-start mx-1">
-                <i class="fa-solid fa-heart">
-                    {% if my_review.like %}
-                    <span class="text-gray-500">{{ my_review.like.count }}</span>
-                    {% else %}
-                    <span class="text-gray-500">0</span>
-                    {% endif %}
-                </i>
-
+<div class="hidden p-4 bg-white rounded-lg lg:p-8 dark:bg-gray-800 flex justify-center flex-col w-full" id="stats" role="tabpanel" aria-labelledby="stats-tab">
+    {% if not reviews %}
+      <p class="text-base mt-12 text-gray-500 text-center">리뷰가 존재하지 않습니다.</p>
+    {% else %}
+    {% for review in reviews %}
+    <a href="{% url 'places:detail' review.place.pk %}" class="bg-white border border-gray-200 rounded-lg shadow hover:bg-gray-100 dark:border-gray-700 dark:bg-gray-800 dark:hover:bg-gray-700">
+        <div class="flex flex-col lg:flex-row">
+            {% with review.place.photos.all|first as photo %}
+            {% if photo %}
+            <img src="{{photo.photo.url}}" alt="{{photos.photo}}" class="h-full w-full object-cover object-center lg:h-full lg:w-2/6">
+            {% else %}
+            <img src="{% static 'img/default-place.jpg' %}" alt="default-place-img" class="h-full w-full object-cover object-center lg:h-full lg:w-2/6">
+            {% endif %}
+            {% endwith %}
+    
+            <div class="flex flex-col justify-between p-4 leading-normal grow-1">
+                <h5 class="mb-2 text-2xl font-bold text-gray-900 dark:text-white">{{review.content}}</h5>
+                <p class="mb-3 font-normal text-gray-700 dark:text-gray-400">{{review.place.name}}</p>
+                <div class="flex justify-start mx-1">
+                    <i class="fa-solid fa-heart">
+                       
+                        <span class="text-gray-500">{{ review.like.count }}</span>
+                        
+                    </i>
+                </div>
             </div>
         </div>
     </a>
-
-    <img class="object-cover w-full rounded-t-lg h-96 md:h-auto md:w-48 md:rounded-none md:rounded-l-lg" src= "{{my_photo.photo.url}}" alt="">
-
     {% endfor %}
+    {% endif %}
 </div>
 
 
