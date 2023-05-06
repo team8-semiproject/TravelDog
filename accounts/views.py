@@ -1,5 +1,9 @@
 # imports
 from django.shortcuts import render, redirect
+from django.shortcuts import redirect, render, get_list_or_404, get_object_or_404
+from places.views import Place, Photo, Review
+from django.core.paginator import Paginator
+from django.conf import settings
 
 from .forms import (
     CustomAuthenticationForm as AuthenticationForm, 
@@ -60,12 +64,39 @@ def logout(request):
 
 
 def profile(request, username):
+    
     person = get_user_model().objects.get(username = username)
+    my_reviews = Review.objects.filter(user=person.pk)
+    page = request.GET.get('page', '1')
+    per_page = 8
+    paginator = Paginator(my_reviews, per_page)
+    page_object = paginator.get_page(page)
+    my_photos = []
+    for review in my_reviews:
+        place = Place.objects.get(pk=review.place.pk)
+        photo = place.photos.all()[:1]
+        my_photos.append(photo)
+    my_list = zip(my_reviews, my_photos)
     context = {
         'person': person,
+        'reviews': page_object,
+        'REST_API_KEY': settings.REST_API_KEY,
+        'my_reviews': my_reviews,
+        'my_list' : my_list
+        
     }
+    print(my_reviews,my_reviews.count)
     return render(request, 'accounts/profile.html', context)
 
+    #     context = {
+    #         'place': place,
+    #         'reviews': page_object,
+    #         'range': ['1', '2', '3', '4', '5'],
+    #         'MAP_API_KEY': settings.MAP_API_KEY,
+    #         'REST_API_KEY': settings.REST_API_KEY,
+    #         'num_range': range(1,6),
+    #     }
+    #     return render(request, 'places/detail.html', context)
 
 @login_required
 def update(request):

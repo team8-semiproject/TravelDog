@@ -7,7 +7,6 @@ from django.utils.translation import gettext_lazy as _
 
 
 # Create your models here.
-
 class UserManager(auth_models.BaseUserManager):
     def create_user(self, username: str, password: str=None, is_active=False, is_admin=False):
         """
