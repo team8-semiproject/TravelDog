@@ -80,10 +80,8 @@ def profile(request, username):
     context = {
         'person': person,
         'reviews': page_object,
-        'REST_API_KEY': settings.REST_API_KEY,
         'my_reviews': my_reviews,
-        'my_list' : my_list
-        
+        'my_list' : my_list,
     }
     print(my_reviews,my_reviews.count)
     return render(request, 'accounts/profile.html', context)
