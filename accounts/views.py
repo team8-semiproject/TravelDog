@@ -77,13 +77,22 @@ def profile(request, username):
         photo = place.photos.all()[:1]
         my_photos.append(photo)
     my_list = zip(my_reviews, my_photos)
+
+    bookmark_places = person.bookmarked_places.all()
+    print('bookmark_places',bookmark_places)
+    page2 = request.GET.get('page', '1')
+    per_page2 = 12
+    paginator2 = Paginator(bookmark_places, per_page2)
+    page_object2 = paginator2.get_page(page2)
+
     context = {
         'person': person,
         'reviews': page_object,
         'my_reviews': my_reviews,
         'my_list' : my_list,
+        'bookmark_places' : page_object2,
+        'range2': ['1', '2', '3', '4', '5'],
     }
-    print(my_reviews,my_reviews.count)
     return render(request, 'accounts/profile.html', context)
 
     #     context = {
@@ -95,6 +104,19 @@ def profile(request, username):
     #         'num_range': range(1,6),
     #     }
     #     return render(request, 'places/detail.html', context)
+
+
+    # def index(request):
+    # places = Place.objects.all()
+    # page = request.GET.get('page', '1')
+    # per_page = 16
+    # paginator = Paginator(places, per_page)
+    # page_object = paginator.get_page(page)
+    # context = {
+    #     'places': page_object,
+    #     'range': ['1', '2', '3', '4', '5'],
+    # }
+    # return render(request, 'places/index.html', context)
 
 @login_required
 def update(request):

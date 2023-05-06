@@ -1,10 +1,9 @@
 {% load static %}
 
 <div class="hidden p-4 bg-white rounded-lg md:p-8 dark:bg-gray-800" id="about" role="tabpanel" aria-labelledby="about-tab">
-    <div class="mt-6 grid grid-cols-1 gap-x-6 gap-y-10 sm:grid-cols-2 lg:grid-cols-4 xl:gap-x-8">
-
+    <div class="mt-6">
         {% comment %} {% for  in  %} {% endcomment %}
-        <div class="group relative shadow hover:shadow-lg px-2 pt-2 pb-4 rounded-lg">
+        {% comment %} <div class="group relative shadow hover:shadow-lg px-2 pt-2 pb-4 rounded-lg">
           <div class="min-h-80 aspect-h-1 aspect-w-1 w-full overflow-hidden rounded-md bg-gray-200 lg:aspect-none group-hover:opacity-75 lg:h-80">
             <img src="https://cdn.visitkorea.or.kr/img/call?cmd=VIEW&id=cf325192-7620-4194-a6bd-8fa4fcbed287" alt="..." class="h-full w-full object-cover object-center lg:h-full lg:w-full">
           </div>
@@ -33,15 +32,15 @@
               <p class="text-sm text-gray-500">18 reviews</p>
             </div>
           </div>
-        </div>
+        </div> {% endcomment %}
         {% comment %} {% endfor %} {% endcomment %}
   
         <!-- More products... -->
-        {% if not places %}
+        {% if not bookmark_places %}
         <p class="text-base mt-12 text-gray-500 text-center">여행지가 존재하지 않습니다.</p>
         {% endif %}
         <div class="mt-6 grid grid-cols-1 gap-x-6 gap-y-10 sm:grid-cols-2 lg:grid-cols-4 xl:gap-x-8">
-          {% for place in places %}
+          {% for place in bookmark_places %}
           <div class="group relative shadow hover:shadow-lg px-2 pt-2 pb-4 rounded-lg">
             <div class="h-80 aspect-h-1 aspect-w-1 w-full overflow-hidden rounded-md bg-gray-200 lg:aspect-none group-hover:opacity-75 lg:h-80">            
               {% with place.photos.all|first as photo %}
@@ -104,5 +103,52 @@
           </div>
           {% endfor %}
         </div>
+        <nav aria-label="Page navigation example" class="flex justify-center mt-20">
+          <ul class="inline-flex items-center -space-x-px">
+            {% if bookmark_places.has_previous %}
+            <li>
+              <a href="?page={{ bookmark_places.previous_page_number }}" class="block px-3 py-2 ml-0 leading-tight text-gray-500 bg-white border border-gray-300 rounded-l-lg hover:bg-gray-100 hover:text-gray-700 dark:bg-gray-800 dark:border-gray-700 dark:text-gray-400 dark:hover:bg-gray-700 dark:hover:text-white">
+                <span class="sr-only">이전</span>
+                <svg aria-hidden="true" class="w-5 h-5" fill="currentColor" viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg"><path fill-rule="evenodd" d="M12.707 5.293a1 1 0 010 1.414L9.414 10l3.293 3.293a1 1 0 01-1.414 1.414l-4-4a1 1 0 010-1.414l4-4a1 1 0 011.414 0z" clip-rule="evenodd"></path></svg>
+              </a>
+            </li>
+            {% else %}
+            <li>
+              <a href="" class="block px-3 py-2 ml-0 leading-tight text-gray-500 bg-white border border-gray-300 rounded-l-lg hover:bg-gray-100 hover:text-gray-700 dark:bg-gray-800 dark:border-gray-700 dark:text-gray-400 dark:hover:bg-gray-700 dark:hover:text-white disabled">
+                <span class="sr-only">이전</span>
+                <svg aria-hidden="true" class="w-5 h-5" fill="currentColor" viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg"><path fill-rule="evenodd" d="M12.707 5.293a1 1 0 010 1.414L9.414 10l3.293 3.293a1 1 0 01-1.414 1.414l-4-4a1 1 0 010-1.414l4-4a1 1 0 011.414 0z" clip-rule="evenodd"></path></svg>
+              </a>
+            </li>
+            {% endif %}
+            {% for page_number in bookmark_places.paginator.page_range %}
+              {% if page_number >= bookmark_places.number|add:-5 and page_number <= bookmark_places.number|add:5 %}
+                {% if page_number == bookmark_places.number %}
+                  <li>
+                    <a href="?page={{ page_number }}" aria-current="page" class="z-10 px-3 py-2 leading-tight text-blue-600 border border-blue-300 bg-blue-50 hover:bg-blue-100 hover:text-blue-700 dark:border-gray-700 dark:bg-gray-700 dark:text-white">{{ page_number }}</a>
+                  </li>
+                {% else %}
+                  <li>
+                    <a href="?page={{ page_number }}" class="px-3 py-2 leading-tight text-gray-500 bg-white border border-gray-300 hover:bg-gray-100 hover:text-gray-700 dark:bg-gray-800 dark:border-gray-700 dark:text-gray-400 dark:hover:bg-gray-700 dark:hover:text-white">{{ page_number }}</a>
+                  </li>
+                {% endif %}
+              {% endif %}
+            {% endfor %}
+            {% if bookmark_places.has_next %}
+              <li>
+                <a href="?page={{ bookmark_places.next_page_number }}" class="block px-3 py-2 leading-tight text-gray-500 bg-white border border-gray-300 rounded-r-lg hover:bg-gray-100 hover:text-gray-700 dark:bg-gray-800 dark:border-gray-700 dark:text-gray-400 dark:hover:bg-gray-700 dark:hover:text-white">
+                  <span class="sr-only">다음</span>
+                  <svg aria-hidden="true" class="w-5 h-5" fill="currentColor" viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg"><path fill-rule="evenodd" d="M7.293 14.707a1 1 0 010-1.414L10.586 10 7.293 6.707a1 1 0 011.414-1.414l4 4a1 1 0 010 1.414l-4 4a1 1 0 01-1.414 0z" clip-rule="evenodd"></path></svg>
+                </a>
+              </li>
+            {% else %}
+              <li>
+                <a href="" tabindex="-1" aria-disabled="true" class="block px-3 py-2 leading-tight text-gray-500 bg-white border border-gray-300 rounded-r-lg hover:bg-gray-100 hover:text-gray-700 dark:bg-gray-800 dark:border-gray-700 dark:text-gray-400 dark:hover:bg-gray-700 dark:hover:text-white disabled">
+                  <span class="sr-only">다음</span>
+                  <svg aria-hidden="true" class="w-5 h-5" fill="currentColor" viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg"><path fill-rule="evenodd" d="M7.293 14.707a1 1 0 010-1.414L10.586 10 7.293 6.707a1 1 0 011.414-1.414l4 4a1 1 0 010 1.414l-4 4a1 1 0 01-1.414 0z" clip-rule="evenodd"></path></svg>
+                </a>
+              </li>
+            {% endif %}
+          </ul>
+        </nav>
       </div>
 </div>

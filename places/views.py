@@ -13,6 +13,7 @@ def index_redirect(request):
 
 def index(request):
     places = Place.objects.all()
+    # print(places)
     page = request.GET.get('page', '1')
     per_page = 16
     paginator = Paginator(places, per_page)
