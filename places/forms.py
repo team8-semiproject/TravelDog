@@ -20,11 +20,3 @@ class PhotoUpdateForm(forms.ModelForm):
     class Meta:
         model = Photo
         fields = ('photo',)
-
-
-class ReviewForm(forms.ModelForm):
-    star = forms.IntegerField(widget=forms.NumberInput(attrs={'min': 1, 'max': 5, 'id': 'starRange'}))
-
-    class Meta:
-        model = Review
-        fields = ('star', 'content',)
