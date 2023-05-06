@@ -52,7 +52,7 @@ def create(request):
 
 def detail(request, place_pk):
     place = get_object_or_404(Place, pk=place_pk)
-    reviews = Review.objects.filter(place=place)
+    reviews = Review.objects.filter(place=place).order_by('-pk')
     page = request.GET.get('page', '1')
     per_page = 8
     paginator = Paginator(reviews, per_page)
