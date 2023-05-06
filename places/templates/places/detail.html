@@ -63,7 +63,7 @@
         </form>
       </div>
       {% endif %}
-      <h2 class="text-3xl font-bold tracking-tight text-gray-900 sm:text-4xl">{{place.name}}</h2>
+      <h2 id="place-name" class="text-3xl font-bold tracking-tight text-gray-900 sm:text-4xl">{{place.name}}</h2>
       <div class="flex gap-2 mt-4">
         <i class="fa-solid fa-location-dot text-primary-700 mt-1"></i>
         <p id="place-address" class="text-gray-500">{{place.address}}</p>
@@ -312,6 +312,9 @@
     {% endif %}
   </form>
 </div>
+<a href="https://docs.google.com/forms/d/e/1FAIpQLSc-Xrz3-Bkvgpq49D2SwuxNUKM6TT9_WjJnhUDxmLaxDGZEyg/viewform?entry.1965459079={{place.name}}&entry.1164742955={{place.address}}" target="_blank" class="fixed right-8 bottom-16 lg:bottom-8 bg-primary-800 focus:ring-4 focus:ring-primary-300 font-medium rounded-full dark:bg-primary-600 dark:hover:bg-primary-700 focus:outline-none dark:focus:ring-primary-800 z-50">
+  <i id="question-btn" class="fa-solid fa-message text-white text-lg px-5 py-4"></i>
+</a>
 {% endblock content %}
 
 {% block js %}
