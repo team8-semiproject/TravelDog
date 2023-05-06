@@ -6,6 +6,7 @@ from .forms import (
     CustomPasswordChangeForm as PasswordChangeForm,
     CustomUserChangeForm as UserChangeForm,
     CustomUserCreationForm as UserCreationForm,
+    
 )
 from django.contrib.auth import (
     login as auth_login,
@@ -63,23 +64,12 @@ def profile(request, username):
     person = get_user_model().objects.get(username = username)
     context = {
         'person': person,
+        'form':UserChangeForm(),
     }
+    if person==request.user:
+        context["form"] = UserChangeForm(instance=request.user)
+
     return render(request, 'accounts/profile.html', context)
-
-
-@login_required
-def update(request):
-    if request.method == 'POST':
-        form = UserChangeForm(request.POST, instance=request.user)
-        if form.is_valid():
-            form.save()
-            return redirect('accounts:profile', request.user.username)
-    else:
-        form = UserChangeForm(instance=request.user)
-    context = {
-        'form': form,
-    }
-    return render(request, 'accounts/update.html', context)
 
 
 @login_required
@@ -99,8 +89,24 @@ def password(request):
     }
     return render(request, 'accounts/password.html', context)
 
-
 @login_required
 def delete(request):
     request.user.delete()
     return redirect('accounts:login')
+
+
+@login_required
+def update_picture(request):
+    user = get_user_model().objects.get(pk=request.user.pk)
+    if request.method == "POST":
+        form = UserChangeForm(instance=user, files=request.FILES)
+        if form.is_valid():
+            form.save()
+    return redirect('accounts:profile', user.username)
+
+
+@login_required
+def delete_picture(request):
+    user = get_user_model().objects.get(pk=request.user.pk)
+    user.picture.delete()
+    return redirect('accounts:profile', user.username)

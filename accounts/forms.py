@@ -1,6 +1,14 @@
-from django.contrib.auth.forms import UserCreationForm, UserChangeForm, AuthenticationForm, PasswordChangeForm, UsernameField
+from django.contrib.auth.forms import (
+    UserCreationForm, 
+    AuthenticationForm, 
+    PasswordChangeForm, 
+    UsernameField,
+    ReadOnlyPasswordHashField
+)
 from django.contrib.auth import get_user_model
 from django import forms
+from imagekit.forms import  ProcessedImageField
+from imagekit.processors import Thumbnail
 from django.utils.translation import gettext, gettext_lazy as _
 
 class CustomUserCreationForm(UserCreationForm):
@@ -9,14 +17,28 @@ class CustomUserCreationForm(UserCreationForm):
         fields = ("username",)
         field_classes = {'username': UsernameField}
 
-class CustomUserChangeForm(UserChangeForm):
-    class Meta(UserChangeForm.Meta):
+class CustomUserChangeForm(forms.ModelForm):
+    picture =  ProcessedImageField(
+        spec_id='accounts:profile_picture',
+        processors=[Thumbnail(200, 200)],
+        format='JPEG',
+        options = {'quality':100} 
+    )
+    class Meta:
         model = get_user_model()
-        fields = '__all__'
+        fields = ('picture',)
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        password = self.fields.get('password')
+        if password:
+            password.help_text = password.help_text.format('../password/')
+        user_permissions = self.fields.get('user_permissions')
+        if user_permissions:
+            user_permissions.queryset = user_permissions.queryset.select_related('content_type')
 
 class CustomAuthenticationForm(AuthenticationForm):
     username = UsernameField(
-        label='',
+        label='아이디',
         widget=forms.TextInput(
             attrs={
                     'autofocus': True,
@@ -25,7 +47,7 @@ class CustomAuthenticationForm(AuthenticationForm):
             )
         )
     password = forms.CharField(
-        label='',
+        label='비밀번호',
         strip=False,
         widget=forms.PasswordInput(
             attrs={
@@ -37,8 +59,3 @@ class CustomAuthenticationForm(AuthenticationForm):
 class CustomPasswordChangeForm(PasswordChangeForm):
     pass
 
-"""
-from accounts.forms import CustomAuthenticationForm as AForm
-form = AForm()
-dir(form)
-"""

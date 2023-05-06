@@ -4,6 +4,8 @@ from django.apps import apps
 from django.contrib.auth import base_user as auth_models
 from django.contrib.auth.validators import UnicodeUsernameValidator
 from django.utils.translation import gettext_lazy as _
+from imagekit.models import ProcessedImageField
+from imagekit.processors import Thumbnail
 
 
 # Create your models here.
@@ -47,8 +49,14 @@ class User(auth_models.AbstractBaseUser):
             'unique': _("A user with that username already exists."),
         },
     )
-    # profile picture
-    picture = models.ImageField(blank=True, upload_to='images/user_profile_picture/') 
+    # user profile picture
+    picture = ProcessedImageField(
+        blank = True,
+        upload_to ='images/users/pictures',
+        processors=[Thumbnail(200, 200)], # 처리할 작업목록
+        format = 'JPEG', # 최종 저장 포맷
+        options = {'quality':100} # 저장 옵션
+    )
 
     is_active = models.BooleanField(default=True)
     is_admin = models.BooleanField(default=False)
