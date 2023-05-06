@@ -8,7 +8,7 @@ from django.dispatch import receiver
 from django.forms import modelformset_factory
 from django.http import JsonResponse
 from django.shortcuts import redirect, render, get_object_or_404
-from .forms import PlaceForm, PhotoForm, ReviewForm, PhotoUpdateForm
+from .forms import PlaceForm, PhotoForm, PhotoUpdateForm
 from .models import Place, Photo, Review
 
 
@@ -57,7 +57,7 @@ def create(request):
 
 def detail(request, place_pk):
     place = Place.objects.prefetch_related('photos', 'bookmark').get(pk=place_pk)
-    reviews = Review.objects.prefetch_related('like', 'user').filter(place=place)
+    reviews = Review.objects.prefetch_related('like', 'user').filter(place=place).order_by('-pk')
     page = request.GET.get('page', '1')
     per_page = 8
     paginator = Paginator(reviews, per_page)
@@ -111,7 +111,6 @@ def update(request, place_pk):
             formset.save()
 
             for new_photo in new_photos:
-                print(new_photo)
                 Photo.objects.create(place=updated_place, photo=new_photo)
 
             return redirect('places:detail', place.pk)
@@ -206,10 +205,8 @@ def review_update(request, place_pk, review_pk):
             raw = list(request.POST.keys())
             data = json.loads(raw[0])
             review.content = data['content']
-            # review.star = data['star']
             review.save()
     context = {
         'content': review.content,
-        # 'star': review.star,
     }
     return JsonResponse(context)
