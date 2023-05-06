@@ -18,7 +18,8 @@ def index_redirect(request):
 
 def index(request):
     places = Place.objects.prefetch_related('photos', 'place_reviews', 'bookmark').all()
-    stars = Review.objects.select_related('places').annotate(Avg('star')).order_by('place')
+    raw_star = Review.objects.annotate(avg_star=Avg('star'))
+    stars = raw_star.values('place').annotate(avg_star=Avg('star'))
     page = request.GET.get('page', '1')
     per_page = 16
     paginator = Paginator(places, per_page)
@@ -28,6 +29,7 @@ def index(request):
         'range': ['1', '2', '3', '4', '5'],
         'stars': stars,
     }
+    print(stars)
     return render(request, 'places/index.html', context)
 
 
