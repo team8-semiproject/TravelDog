@@ -63,7 +63,7 @@
           <div class="p-6 space-y-6">
             <!-- 사진이 없으면 기본 -->
            {% if person.picture %}
-           <img class="w-24 h-24 rounded-full" src="{{ person.picture.url }}" alt="{{ person.picture }}">
+           <img class="w-24 h-24 rounded-full" src="{{ person.picture.url }}" alt="{{ person.picture.url }}">
            {% else %}
            <img class="w-24 h-24 rounded-full" src="{% static 'img/default-profile.jpg' %}" alt="default-profile-picutre">
            {% endif %}

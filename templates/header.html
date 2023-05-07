@@ -20,7 +20,7 @@
                 {% if user.picture %}
                 <img class="w-6 h-6 m-1 rounded-full" src="{{ user.picture.url }}" alt="{{ user.picture }}">
                 {% else %}
-                <svg class="w-6 h-6 m-1 rounded-full shadow-lg"  fill="currentColor" viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg"><path fill-rule="evenodd" d="M10 9a3 3 0 100-6 3 3 0 000 6zm-7 9a7 7 0 1114 0H3z" clip-rule="evenodd"></path></svg>
+                <img class="w-6 h-6 rounded-full" src="{% static 'img/default-profile.jpg' %}" alt="default-profile-picutre">
                 {% endif %}
               </div>
                 <button id="dropdownButton" data-dropdown-toggle="dropdown" class="inline-block text-gray-500 dark:text-gray-400 hover:bg-gray-100 dark:hover:bg-gray-700 focus:ring-4 focus:outline-none focus:ring-gray-200 dark:focus:ring-gray-700 rounded-lg text-sm p-1.5" type="button">
