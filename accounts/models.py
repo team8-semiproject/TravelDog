@@ -1,5 +1,4 @@
 from django.db import models
-from django.contrib.auth.hashers import make_password
 from django.apps import apps
 from django.contrib.auth import base_user as auth_models
 from django.contrib.auth.validators import UnicodeUsernameValidator
@@ -8,13 +7,8 @@ from imagekit.models import ProcessedImageField
 from imagekit.processors import Thumbnail
 
 
-# Create your models here.
-
 class UserManager(auth_models.BaseUserManager):
     def create_user(self, username: str, password: str=None, is_active=False, is_admin=False):
-        """
-        Create and save a user with the given username and password.
-        """
         if not username:
             raise ValueError('The given username must be set')
 
@@ -36,9 +30,7 @@ class UserManager(auth_models.BaseUserManager):
         return user
     
 class User(auth_models.AbstractBaseUser):
-
     username_validator = UnicodeUsernameValidator()
-
     username = models.CharField(
         _('username'),
         max_length=30,
@@ -78,6 +70,3 @@ class User(auth_models.AbstractBaseUser):
     @property
     def is_staff(self):
         return self.is_admin
-    
-
-    

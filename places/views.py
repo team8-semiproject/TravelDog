@@ -2,12 +2,13 @@ import json, os
 from django.conf import settings
 from django.contrib.auth.decorators import login_required
 from django.core.paginator import Paginator
+from django.db.models import Avg
 from django.db.models.signals import post_delete, pre_save
 from django.dispatch import receiver
 from django.forms import modelformset_factory
 from django.http import JsonResponse
 from django.shortcuts import redirect, render, get_object_or_404
-from .forms import PlaceForm, PhotoForm, ReviewForm, PhotoUpdateForm
+from .forms import PlaceForm, PhotoForm, PhotoUpdateForm
 from .models import Place, Photo, Review
 
 
@@ -16,7 +17,9 @@ def index_redirect(request):
 
 
 def index(request):
-    places = Place.objects.all()
+    places = Place.objects.prefetch_related('photos', 'place_reviews', 'bookmark').all()
+    raw_star = Review.objects.annotate(avg_star=Avg('star'))
+    stars = raw_star.values('place').annotate(avg_star=Avg('star'))
     page = request.GET.get('page', '1')
     per_page = 16
     paginator = Paginator(places, per_page)
@@ -24,7 +27,9 @@ def index(request):
     context = {
         'places': page_object,
         'range': ['1', '2', '3', '4', '5'],
+        'stars': stars,
     }
+    print(stars)
     return render(request, 'places/index.html', context)
 
 
@@ -51,8 +56,8 @@ def create(request):
 
 
 def detail(request, place_pk):
-    place = get_object_or_404(Place, pk=place_pk)
-    reviews = Review.objects.filter(place=place)
+    place = Place.objects.prefetch_related('photos', 'bookmark').get(pk=place_pk)
+    reviews = Review.objects.prefetch_related('like', 'user').filter(place=place).order_by('-pk')
     page = request.GET.get('page', '1')
     per_page = 8
     paginator = Paginator(reviews, per_page)
@@ -106,7 +111,6 @@ def update(request, place_pk):
             formset.save()
 
             for new_photo in new_photos:
-                print(new_photo)
                 Photo.objects.create(place=updated_place, photo=new_photo)
 
             return redirect('places:detail', place.pk)
@@ -201,10 +205,8 @@ def review_update(request, place_pk, review_pk):
             raw = list(request.POST.keys())
             data = json.loads(raw[0])
             review.content = data['content']
-            # review.star = data['star']
             review.save()
     context = {
         'content': review.content,
-        # 'star': review.star,
     }
     return JsonResponse(context)

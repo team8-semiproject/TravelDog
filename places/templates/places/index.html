@@ -46,7 +46,7 @@
               </div>
             </div>
             <div class="flex flex-col gap-2">
-              {% with avg_ratings=place.avg_ratings %}
+              {% comment %} {% with avg_ratings=place.avg_ratings %}
                 {% if not avg_ratings.star__avg %}
                 <div class="flex content-center	gap-0.5">
                   <i class="fa-solid fa-star text-slate-300 my-auto"></i>
@@ -68,7 +68,32 @@
                   <span class="text-base text-gray-500 ms-1">{{avg_ratings.star__avg|floatformat:'1'}}</span>
                 </div>
                 {% endif %}
-              {% endwith %}
+              {% endwith %} {% endcomment %}
+              {% for star in stars %}
+                {% if star.place == place.pk %}
+                  {% if not star.avg_star %}
+                  <div class="flex content-center gap-0.5">
+                    <i class="fa-solid fa-star text-slate-300 my-auto"></i>
+                    <i class="fa-solid fa-star text-slate-300 my-auto"></i>
+                    <i class="fa-solid fa-star text-slate-300 my-auto"></i>
+                    <i class="fa-solid fa-star text-slate-300 my-auto"></i>
+                    <i class="fa-solid fa-star text-slate-300 my-auto"></i>
+                    <span class="text-base text-gray-500 ms-1">0.0</span>
+                  </div>
+                  {% else %}
+                  <div class="flex content-center gap-0.5">
+                    {% for i in range %}
+                      {% if i >= star.avg_star|floatformat:1 %}
+                      <i class="fa-solid fa-star text-slate-300 my-auto"></i>
+                      {% else %}
+                      <i class="fa-solid fa-star text-amber-400 my-auto"></i>
+                      {% endif %}
+                    {% endfor %}
+                    <span class="text-base text-gray-500 ms-1">{{ star.avg_star|floatformat:1 }}</span>
+                  </div>
+                  {% endif %}
+                {% endif %}
+              {% endfor %}
               <p class="text-sm text-gray-500">{{place.place_reviews.all|length}} reviews</p>
               {% if request.user in place.bookmark.all %}
               <div class="absolute right-0 bottom-0 flex items-center justify-center m-4">
@@ -133,4 +158,7 @@
       </nav>
   </div>
 </section>
+<a href="https://docs.google.com/forms/d/e/1FAIpQLScSIdxqVzZPbHHK5GnLYIQauIDI8R4TRb0HEwagt3-3i4EPKg/viewform?usp=sf_link" target="_blank" class="fixed right-8 bottom-8 bg-primary-800 focus:ring-4 focus:ring-primary-300 font-medium rounded-full px-5 py-4 dark:bg-primary-600 dark:hover:bg-primary-700 focus:outline-none dark:focus:ring-primary-800">
+  <i class="fa-solid fa-message text-white text-lg"></i>
+</a>
 {% endblock content %}

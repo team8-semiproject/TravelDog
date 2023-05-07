@@ -1,3 +1,4 @@
+
 from django.contrib.auth.forms import (
     UserCreationForm, 
     AuthenticationForm, 
@@ -11,11 +12,13 @@ from imagekit.forms import  ProcessedImageField
 from imagekit.processors import Thumbnail
 from django.utils.translation import gettext, gettext_lazy as _
 
+
 class CustomUserCreationForm(UserCreationForm):
     class Meta:
         model = get_user_model()
         fields = ("username",)
         field_classes = {'username': UsernameField}
+
 
 class CustomUserChangeForm(forms.ModelForm):
     picture =  ProcessedImageField(
@@ -36,6 +39,7 @@ class CustomUserChangeForm(forms.ModelForm):
         if user_permissions:
             user_permissions.queryset = user_permissions.queryset.select_related('content_type')
 
+
 class CustomAuthenticationForm(AuthenticationForm):
     username = UsernameField(
         label='아이디',
@@ -55,6 +59,7 @@ class CustomAuthenticationForm(AuthenticationForm):
                 }
             ),
         )
+
 
 class CustomPasswordChangeForm(PasswordChangeForm):
     pass
