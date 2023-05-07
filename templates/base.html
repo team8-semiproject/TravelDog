@@ -7,12 +7,21 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>TravelDog</title>
     {% comment %} Favicon {% endcomment %}
-    <link rel="shortcut icon" href="{% static 'favicon/favicon.png' %}" type="image/x-icon">
-    <link rel="icon" href="{% static 'favicon/favicon.png' %}" type="image/x-icon">
+    <link rel="shortcut icon"
+          href="{% static 'favicon/favicon.png' %}"
+          type="image/x-icon">
+    <link rel="icon"
+          href="{% static 'favicon/favicon.png' %}"
+          type="image/x-icon">
     {% comment %} Favicon End {% endcomment %}
     {% comment %} FontAwesome Icon {% endcomment %}
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" integrity="sha512-iecdLmaskl7CVkqkXNQ/ZH/XLlvWZOJyj7Yy7tcenmpD1ypASozpmT/E0iPtmFIB46ZmdtAc9eNBvH0H/ZpiBw==" crossorigin="anonymous" referrerpolicy="no-referrer" />
-    <link href="https://cdnjs.cloudflare.com/ajax/libs/flowbite/1.6.5/flowbite.min.css" rel="stylesheet" />
+    <link rel="stylesheet"
+          href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css"
+          integrity="sha512-iecdLmaskl7CVkqkXNQ/ZH/XLlvWZOJyj7Yy7tcenmpD1ypASozpmT/E0iPtmFIB46ZmdtAc9eNBvH0H/ZpiBw=="
+          crossorigin="anonymous"
+          referrerpolicy="no-referrer" />
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/flowbite/1.6.5/flowbite.min.css"
+          rel="stylesheet" />
     <link rel="stylesheet" href="{% static 'style.css' %}">
     <script src="https://cdn.tailwindcss.com"></script>
     <script>
@@ -62,17 +71,21 @@
         }
       }
     }
-  </script>
-</head>
-<body class="relative">
-  {% comment %} NavBar {% endcomment %}
-  <header class="sticky top-0 z-50">{% include 'header.html' %}</header>
-
-  {% block content %}  {% endblock content %}
-
-  <footer>{% include 'footer.html' %}</footer>
-  {% block js %}{% endblock js %}
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/flowbite/1.6.5/flowbite.min.js"></script>
-  <script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
-</body>
+    </script>
+  </head>
+  <body class="relative">
+    {% comment %} NavBar {% endcomment %}
+    <header class="sticky top-0 z-50">
+      {% include 'header.html' %}
+    </header>
+    {% block content %}
+    {% endblock content %}
+    <footer>
+      {% include 'footer.html' %}
+    </footer>
+    {% block js %}
+    {% endblock js %}
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/flowbite/1.6.5/flowbite.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
+  </body>
 </html>

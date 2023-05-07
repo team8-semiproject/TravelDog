@@ -1,18 +1,27 @@
-{% load static %}
 <!DOCTYPE html>
 <html lang="en">
   <head>
+    {% load static %}
     <meta charset="UTF-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>TravelDog</title>
     {% comment %} Favicon {% endcomment %}
-    <link rel="shortcut icon" href="{% static 'favicon/favicon.png' %}" type="image/x-icon">
-    <link rel="icon" href="{% static 'favicon/favicon.png' %}" type="image/x-icon">
+    <link rel="shortcut icon"
+          href="{% static 'favicon/favicon.png' %}"
+          type="image/x-icon">
+    <link rel="icon"
+          href="{% static 'favicon/favicon.png' %}"
+          type="image/x-icon">
     {% comment %} Favicon End {% endcomment %}
     {% comment %} FontAwesome Icon {% endcomment %}
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" integrity="sha512-iecdLmaskl7CVkqkXNQ/ZH/XLlvWZOJyj7Yy7tcenmpD1ypASozpmT/E0iPtmFIB46ZmdtAc9eNBvH0H/ZpiBw==" crossorigin="anonymous" referrerpolicy="no-referrer" />
-    <link href="https://cdnjs.cloudflare.com/ajax/libs/flowbite/1.6.5/flowbite.min.css" rel="stylesheet" />
+    <link rel="stylesheet"
+          href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css"
+          integrity="sha512-iecdLmaskl7CVkqkXNQ/ZH/XLlvWZOJyj7Yy7tcenmpD1ypASozpmT/E0iPtmFIB46ZmdtAc9eNBvH0H/ZpiBw=="
+          crossorigin="anonymous"
+          referrerpolicy="no-referrer" />
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/flowbite/1.6.5/flowbite.min.css"
+          rel="stylesheet" />
     <link rel="stylesheet" href="{% static 'style.css' %}">
     <script src="https://cdn.tailwindcss.com"></script>
     <script>
@@ -62,26 +71,29 @@
         }
       }
     }
-  </script>
-</head>
-<body class="relative">
-  {% comment %} NavBar {% endcomment %}
-  <div class="md:h-screen md:w-screen flex flex-col justify-between">
-    <header class="sticky top-0 z-50">{% include 'header.html' %}</header>
-
-
-    <footer class="absolute w-full bottom-0 z-50">{% include 'footer.html' %}</footer>
-  </div>
-  <section class="absolute top-0 bg-gray-50 dark:bg-gray-900">
-    <div class="flex flex-col items-center justify-center px-6 py-8 mx-auto md:h-screen md:w-screen lg:py-0">
-      <div class="w-full bg-white rounded-lg shadow dark:border md:mt-0 sm:max-w-md xl:p-0 dark:bg-gray-800 dark:border-gray-700">
-      {% block form %}{% endblock form %}
-      </div>
+    </script>
+  </head>
+  <body class="relative">
+    {% comment %} NavBar {% endcomment %}
+    <div class="md:h-screen md:w-screen flex flex-col justify-between">
+      <header class="sticky top-0 z-50">
+        {% include 'header.html' %}
+      </header>
+      <footer class="absolute w-full bottom-0 z-50">
+        {% include 'footer.html' %}
+      </footer>
     </div>
-  </section>
-
-  {% block js %}{% endblock js %}
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/flowbite/1.6.5/flowbite.min.js"></script>
-  <script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
-</body>
+    <section class="absolute top-0 bg-gray-50 dark:bg-gray-900">
+      <div class="flex flex-col items-center justify-center px-6 py-8 mx-auto md:h-screen md:w-screen lg:py-0">
+        <div class="w-full bg-white rounded-lg shadow dark:border md:mt-0 sm:max-w-md xl:p-0 dark:bg-gray-800 dark:border-gray-700">
+          {% block form %}
+          {% endblock form %}
+        </div>
+      </div>
+    </section>
+    {% block js %}
+    {% endblock js %}
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/flowbite/1.6.5/flowbite.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
+  </body>
 </html>
