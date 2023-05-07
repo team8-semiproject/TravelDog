@@ -1,10 +1,9 @@
 {% load static %}
-
-    {% if not like_reviews %}
-        <p class="text-base mt-12 text-gray-500 text-center">리뷰가 존재하지 않습니다.</p>
-    {% else %}
-        {% for review in like_reviews %}
-        {% include 'accounts/profile_/like_review_card.html' %}
-        {% endfor %}
-    {% endif %}
+{% if not like_reviews %}
+  <p class="text-base mt-12 text-gray-500 text-center">리뷰가 존재하지 않습니다.</p>
+{% else %}
+  {% for review in like_reviews %}
+  {% include 'accounts/profile_/like_review_card.html' %}
+  {% endfor %}
+{% endif %}
 
