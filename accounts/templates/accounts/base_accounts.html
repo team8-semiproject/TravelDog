@@ -6,22 +6,14 @@
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>TravelDog</title>
-    {% comment %} Favicon {% endcomment %}
     <link rel="shortcut icon"
           href="{% static 'favicon/favicon.png' %}"
           type="image/x-icon">
     <link rel="icon"
           href="{% static 'favicon/favicon.png' %}"
           type="image/x-icon">
-    {% comment %} Favicon End {% endcomment %}
-    {% comment %} FontAwesome Icon {% endcomment %}
-    <link rel="stylesheet"
-          href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css"
-          integrity="sha512-iecdLmaskl7CVkqkXNQ/ZH/XLlvWZOJyj7Yy7tcenmpD1ypASozpmT/E0iPtmFIB46ZmdtAc9eNBvH0H/ZpiBw=="
-          crossorigin="anonymous"
-          referrerpolicy="no-referrer" />
-    <link href="https://cdnjs.cloudflare.com/ajax/libs/flowbite/1.6.5/flowbite.min.css"
-          rel="stylesheet" />
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" integrity="sha512-iecdLmaskl7CVkqkXNQ/ZH/XLlvWZOJyj7Yy7tcenmpD1ypASozpmT/E0iPtmFIB46ZmdtAc9eNBvH0H/ZpiBw==" crossorigin="anonymous" referrerpolicy="no-referrer" />
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/flowbite/1.6.5/flowbite.min.css" rel="stylesheet" />
     <link rel="stylesheet" href="{% static 'style.css' %}">
     <script src="https://cdn.tailwindcss.com"></script>
     <script>
@@ -78,24 +70,19 @@
     <header class="sticky top-0 z-50">
       {% include 'header.html' %}
     </header>
-
-
-      <section class="bg-gray-50 dark:bg-gray-900">
-
-        <div class="flex flex-col items-center justify-between mx-auto md:h-screen md:w-screen lg:py-0">
-          <!--form wrapper-->
-          <div class="my-auto w-full bg-white rounded-lg shadow dark:border sm:max-w-md xl:p-0 dark:bg-gray-800 dark:border-gray-700">
-            {% block form %}
-            {% endblock form %}
-          </div>
-
-          <footer class="fixed bottom-0 bg-white w-full max-w-screen-xl">
-            <hr class="border-gray-200 dark:border-gray-700 my-4">
-            <span class="block text-sm text-gray-500 sm:text-center dark:text-gray-400">© 2023 <a href="{% url 'places:index' %}" class="hover:underline">TravelDog™</a>. All Rights Reserved.</span>
-          </footer>
+    <section class="bg-gray-50 dark:bg-gray-900">
+      <div class="flex flex-col items-center justify-between mx-auto md:h-screen md:w-screen lg:py-0">
+        <!--form wrapper-->
+        <div class="my-auto w-full bg-white rounded-lg shadow dark:border sm:max-w-md xl:p-0 dark:bg-gray-800 dark:border-gray-700">
+         {% block form %}
+         {% endblock form %}
         </div>
-      </section>
-    
+        <footer class="fixed bottom-0 bg-white w-full max-w-screen-xl">
+          <hr class="border-gray-200 dark:border-gray-700 my-4">
+          <span class="block text-sm text-gray-500 sm:text-center dark:text-gray-400">© 2023 <a href="{% url 'places:index' %}" class="hover:underline">TravelDog™</a>. All Rights Reserved.</span>
+        </footer>
+      </div>
+    </section>
     {% block js %}
     {% endblock js %}
     <script>
