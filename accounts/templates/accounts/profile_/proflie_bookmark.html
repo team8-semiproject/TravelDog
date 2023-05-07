@@ -1,26 +1,43 @@
 {% load static %}
-
-<div class="hidden p-4 bg-white rounded-lg md:p-8 dark:bg-gray-800" id="about" role="tabpanel" aria-labelledby="about-tab">
-    <div class="mt-6">
-        {% comment %} {% for  in  %} {% endcomment %}
-        {% comment %} <div class="group relative shadow hover:shadow-lg px-2 pt-2 pb-4 rounded-lg">
-          <div class="min-h-80 aspect-h-1 aspect-w-1 w-full overflow-hidden rounded-md bg-gray-200 lg:aspect-none group-hover:opacity-75 lg:h-80">
-            <img src="https://cdn.visitkorea.or.kr/img/call?cmd=VIEW&id=cf325192-7620-4194-a6bd-8fa4fcbed287" alt="..." class="h-full w-full object-cover object-center lg:h-full lg:w-full">
+<div class="hidden p-4 bg-white rounded-lg md:p-8 dark:bg-gray-800"
+     id="about"
+     role="tabpanel"
+     aria-labelledby="about-tab">
+  <div class="mt-6">
+    {% if not bookmark_places %}<p class="text-base mt-12 text-gray-500 text-center">여행지가 존재하지 않습니다.</p>{% endif %}
+    <div class="mt-6 grid grid-cols-1 gap-x-6 gap-y-10 sm:grid-cols-2 lg:grid-cols-4 xl:gap-x-8">
+      <!-- bookmarks -->
+      {% for place in bookmark_places %}
+        <div class="group relative shadow hover:shadow-lg px-2 pt-2 pb-4 rounded-lg">
+          <div class="h-80 aspect-h-1 aspect-w-1 w-full overflow-hidden rounded-md bg-gray-200 lg:aspect-none group-hover:opacity-75 lg:h-80">
+            {% with place.photos.all|first as photo %}
+              {% if photo %}
+                <img src="{{ photo.photo.url }}"
+                     alt="{{ photos.photo }}"
+                     class="h-full w-full object-cover object-center lg:h-full lg:w-full">
+              {% else %}
+                <img src="{% static 'img/default-place.jpg' %}"
+                     alt="default-place-img"
+                     class="h-full w-full object-cover object-center lg:h-full lg:w-full">
+              {% endif %}
+            {% endwith %}
           </div>
           <div class="mt-4 flex flex-col justify-between h-32 sm:h-36">
             <div class="flex flex-col gap-2">
               <h3 class="text-xl truncate text-gray-700">
-                <a href="#">
+                <a href="{% url 'places:detail' place.pk %}">
                   <span aria-hidden="true" class="absolute inset-0"></span>
-                  혼자두면장판뜯어서차린개카페
+                  {{ place.name }}
                 </a>
               </h3>
               <div class="flex gap-2">
                 <i class="fa-solid fa-location-dot text-primary-700 mt-1"></i>
-                <p class="text-base text-gray-500">서울특별시 관악구 남부순환로 1665 (남부순환로)</p>
+                <p class="text-base text-gray-500">{{ place.address }}</p>
               </div>
             </div>
             <div class="flex flex-col gap-2">
+
+
               <div class="flex content-center	gap-0.5">
                 <i class="fa-solid fa-star text-amber-400 my-auto"></i>
                 <i class="fa-solid fa-star text-amber-400 my-auto"></i>
@@ -92,6 +109,7 @@
                 {% endfor %}
                 {% comment %} {% with avg_ratings=place.avg_ratings %}
                   {% if not avg_ratings.star__avg %}
+
                   <div class="flex content-center	gap-0.5">
                     <i class="fa-solid fa-star text-slate-300 my-auto"></i>
                     <i class="fa-solid fa-star text-slate-300 my-auto"></i>
@@ -100,80 +118,35 @@
                     <i class="fa-solid fa-star text-slate-300 my-auto"></i>
                     <span class="text-base text-gray-500 ms-1">0.0</span>
                   </div>
-                  {% else %}
+                {% else %}
                   <div class="flex content-center	gap-0.5">
                     {% for i in range %}
-                    {% if i >= avg_ratings.star__avg|floatformat:'1' %}
-                    <i class="fa-solid fa-star text-slate-300 my-auto"></i>
-                    {% else %}
-                    <i class="fa-solid fa-star text-amber-400 my-auto"></i>
-                    {% endif %}
+                      {% if i >= avg_ratings.star__avg|floatformat:'1' %}
+                        <i class="fa-solid fa-star text-slate-300 my-auto"></i>
+                      {% else %}
+                        <i class="fa-solid fa-star text-amber-400 my-auto"></i>
+                      {% endif %}
                     {% endfor %}
-                    <span class="text-base text-gray-500 ms-1">{{avg_ratings.star__avg|floatformat:'1'}}</span>
+                    <span class="text-base text-gray-500 ms-1">{{ avg_ratings.star__avg|floatformat:'1' }}</span>
                   </div>
-                  {% endif %}
-                {% endwith %} {% endcomment %}
-                <p class="text-sm text-gray-500">{{place.place_reviews.all|length}} reviews</p>
-                {% if request.user in place.bookmark.all %}
+
+                {% endif %}
+              {% endwith %}
+              <p class="text-sm text-gray-500">{{ place.place_reviews.all|length }} reviews</p>
+              {% if request.user in place.bookmark.all %}
+
                 <div class="absolute right-0 bottom-0 flex items-center justify-center m-4">
                   <i class="fa-solid fa-bookmark text-primary-700 text-xl"></i>
                 </div>
-                {% else %}
+              {% else %}
                 <div class="absolute right-0 bottom-0 flex items-center justify-center m-4">
                   <i class="fa-regular fa-bookmark text-gray-500 text-xl"></i>
                 </div>
-                {% endif %}
-              </div>
+              {% endif %}
             </div>
           </div>
-          {% endfor %}
         </div>
-        {% comment %} <nav aria-label="Page navigation example" class="flex justify-center mt-20">
-          <ul class="inline-flex items-center -space-x-px">
-            {% if bookmark_places.has_previous %}
-            <li>
-              <a href="?page={{ bookmark_places.previous_page_number }}" class="block px-3 py-2 ml-0 leading-tight text-gray-500 bg-white border border-gray-300 rounded-l-lg hover:bg-gray-100 hover:text-gray-700 dark:bg-gray-800 dark:border-gray-700 dark:text-gray-400 dark:hover:bg-gray-700 dark:hover:text-white">
-                <span class="sr-only">이전</span>
-                <svg aria-hidden="true" class="w-5 h-5" fill="currentColor" viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg"><path fill-rule="evenodd" d="M12.707 5.293a1 1 0 010 1.414L9.414 10l3.293 3.293a1 1 0 01-1.414 1.414l-4-4a1 1 0 010-1.414l4-4a1 1 0 011.414 0z" clip-rule="evenodd"></path></svg>
-              </a>
-            </li>
-            {% else %}
-            <li>
-              <a href="" class="block px-3 py-2 ml-0 leading-tight text-gray-500 bg-white border border-gray-300 rounded-l-lg hover:bg-gray-100 hover:text-gray-700 dark:bg-gray-800 dark:border-gray-700 dark:text-gray-400 dark:hover:bg-gray-700 dark:hover:text-white disabled">
-                <span class="sr-only">이전</span>
-                <svg aria-hidden="true" class="w-5 h-5" fill="currentColor" viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg"><path fill-rule="evenodd" d="M12.707 5.293a1 1 0 010 1.414L9.414 10l3.293 3.293a1 1 0 01-1.414 1.414l-4-4a1 1 0 010-1.414l4-4a1 1 0 011.414 0z" clip-rule="evenodd"></path></svg>
-              </a>
-            </li>
-            {% endif %}
-            {% for page_number in bookmark_places.paginator.page_range %}
-              {% if page_number >= bookmark_places.number|add:-5 and page_number <= bookmark_places.number|add:5 %}
-                {% if page_number == bookmark_places.number %}
-                  <li>
-                    <a href="?page={{ page_number }}" aria-current="page" class="z-10 px-3 py-2 leading-tight text-blue-600 border border-blue-300 bg-blue-50 hover:bg-blue-100 hover:text-blue-700 dark:border-gray-700 dark:bg-gray-700 dark:text-white">{{ page_number }}</a>
-                  </li>
-                {% else %}
-                  <li>
-                    <a href="?page={{ page_number }}" class="px-3 py-2 leading-tight text-gray-500 bg-white border border-gray-300 hover:bg-gray-100 hover:text-gray-700 dark:bg-gray-800 dark:border-gray-700 dark:text-gray-400 dark:hover:bg-gray-700 dark:hover:text-white">{{ page_number }}</a>
-                  </li>
-                {% endif %}
-              {% endif %}
-            {% endfor %}
-            {% if bookmark_places.has_next %}
-              <li>
-                <a href="?page={{ bookmark_places.next_page_number }}" class="block px-3 py-2 leading-tight text-gray-500 bg-white border border-gray-300 rounded-r-lg hover:bg-gray-100 hover:text-gray-700 dark:bg-gray-800 dark:border-gray-700 dark:text-gray-400 dark:hover:bg-gray-700 dark:hover:text-white">
-                  <span class="sr-only">다음</span>
-                  <svg aria-hidden="true" class="w-5 h-5" fill="currentColor" viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg"><path fill-rule="evenodd" d="M7.293 14.707a1 1 0 010-1.414L10.586 10 7.293 6.707a1 1 0 011.414-1.414l4 4a1 1 0 010 1.414l-4 4a1 1 0 01-1.414 0z" clip-rule="evenodd"></path></svg>
-                </a>
-              </li>
-            {% else %}
-              <li>
-                <a href="" tabindex="-1" aria-disabled="true" class="block px-3 py-2 leading-tight text-gray-500 bg-white border border-gray-300 rounded-r-lg hover:bg-gray-100 hover:text-gray-700 dark:bg-gray-800 dark:border-gray-700 dark:text-gray-400 dark:hover:bg-gray-700 dark:hover:text-white disabled">
-                  <span class="sr-only">다음</span>
-                  <svg aria-hidden="true" class="w-5 h-5" fill="currentColor" viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg"><path fill-rule="evenodd" d="M7.293 14.707a1 1 0 010-1.414L10.586 10 7.293 6.707a1 1 0 011.414-1.414l4 4a1 1 0 010 1.414l-4 4a1 1 0 01-1.414 0z" clip-rule="evenodd"></path></svg>
-                </a>
-              </li>
-            {% endif %}
-          </ul>
-        </nav> {% endcomment %}
-      </div>
+      {% endfor %}
+    </div>
+  </div>
 </div>
