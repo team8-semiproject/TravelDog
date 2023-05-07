@@ -1,17 +1,16 @@
 from django.db import models
-from django.contrib.auth.hashers import make_password
 from django.apps import apps
 from django.contrib.auth import base_user as auth_models
 from django.contrib.auth.validators import UnicodeUsernameValidator
 from django.utils.translation import gettext_lazy as _
+from imagekit.models import ProcessedImageField
+from imagekit.processors import Thumbnail
 
 
 # Create your models here.
+
 class UserManager(auth_models.BaseUserManager):
     def create_user(self, username: str, password: str=None, is_active=False, is_admin=False):
-        """
-        Create and save a user with the given username and password.
-        """
         if not username:
             raise ValueError('The given username must be set')
 
@@ -33,9 +32,7 @@ class UserManager(auth_models.BaseUserManager):
         return user
     
 class User(auth_models.AbstractBaseUser):
-
     username_validator = UnicodeUsernameValidator()
-
     username = models.CharField(
         _('username'),
         max_length=30,
@@ -46,8 +43,14 @@ class User(auth_models.AbstractBaseUser):
             'unique': _("A user with that username already exists."),
         },
     )
-    # profile picture
-    picture = models.ImageField(blank=True, upload_to='images/user_profile_picture/') 
+    # user profile picture
+    picture = ProcessedImageField(
+        blank = True,
+        upload_to ='images/users/pictures',
+        processors=[Thumbnail(200, 200)], # 처리할 작업목록
+        format = 'JPEG', # 최종 저장 포맷
+        options = {'quality':100} # 저장 옵션
+    )
 
     is_active = models.BooleanField(default=True)
     is_admin = models.BooleanField(default=False)
@@ -69,6 +72,3 @@ class User(auth_models.AbstractBaseUser):
     @property
     def is_staff(self):
         return self.is_admin
-    
-
-    

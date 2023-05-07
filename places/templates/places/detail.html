@@ -63,7 +63,7 @@
         </form>
       </div>
       {% endif %}
-      <h2 class="text-3xl font-bold tracking-tight text-gray-900 sm:text-4xl">{{place.name}}</h2>
+      <h2 id="place-name" class="text-3xl font-bold tracking-tight text-gray-900 sm:text-4xl">{{place.name}}</h2>
       <div class="flex gap-2 mt-4">
         <i class="fa-solid fa-location-dot text-primary-700 mt-1"></i>
         <p id="place-address" class="text-gray-500">{{place.address}}</p>
@@ -119,7 +119,7 @@
       {% endif %}
       {% for review in reviews %}
       <div class="mb-12">
-        <div class="flex justify-between mb-4">
+        <div class="flex justify-between mb-4" id="reviewUser-{{review.pk}}">
           <div class="group flex items-center gap-x-4">
             {% if review.user.picture %}
             <img class="h-12 w-12 rounded-full" src="{{ review.user.picture.url }}" alt="{{ review.user.picture }}">
@@ -150,14 +150,11 @@
             </button>
             <div id="review-more-modal" class="hidden absolute right-0 z-10 flex w-screen max-w-max px-1 shadow-lg rounded review-more-modals">
               <div class="p-1">
-                {% comment %} <div class="group relative flex gap-x-6 rounded-lg p-4 hover:bg-gray-50">
-                  <div>
-                    <a href="" class="font-semibold text-gray-900">
-                      수정하기
-                      <span class="absolute inset-0"></span>
-                    </a>
-                  </div>
-                </div> {% endcomment %}
+                <div class="group relative flex gap-x-6 rounded-lg p-4 hover:bg-gray-50">
+                  <button type="button" class="font-semibold text-gray-900 review-edit-btn" data-place-id="{{ place.pk }}" data-review-id="{{ review.pk }}">
+                    수정하기
+                  </button>
+                </div>
                 <div class="group relative flex gap-x-6 rounded-lg p-4 hover:bg-gray-50">
                   <div>
                     <form action="{% url 'places:review_delete' place.pk review.pk %}" method="POST">
@@ -173,24 +170,35 @@
           </div>
           {% endif %}
         </div>
-        <p class="text-base text-gray-900 mb-4">{{review.content}}</p>
+        <p class="text-base text-gray-900 mb-4" id="reviewContent-{{review.pk}}">{{review.content}}</p>
         {% if request.user.is_authenticated %}
-        <form action="{% url 'places:review_like' place.pk review.pk %}" method="POST">
+        <form class="review-likeform" id="reviewlike-{{ review.pk }}" data-review-id="{{ review.pk }}" data-place-id="{{ place.pk }}">
           {% csrf_token %}
           {% if request.user in review.like.all %}
-            <button type="submit" class="p-0 text-primary-700"><i class="fa-solid fa-heart"></i></button>
+            <button type="submit" class="p-0"><i class="fa-solid fa-heart text-primary-700"></i></button>
           {% else %}
-            <button type="submit" class="p-0 text-gray-500"><i class="fa-regular fa-heart"></i></button>
+            <button type="submit" class="p-0"><i class="fa-regular fa-heart text-gray-500"></i></button>
           {% endif %}
         {% else %}
-            <button type="submit" class="p-0 text-gray-500" disabled="disabled"><i class="fa-regular fa-heart"></i></button> 
+            <button type="submit" class="p-0" disabled="disabled"><i class="fa-regular fa-heart text-gray-500"></i></button> 
         {% endif %}
-        {% if review.like %}
-          <span class="text-gray-500">{{ review.like.count }}</span>
-        {% else %}
-          <span class="text-gray-500">0</span>
-        {% endif %}
+        <span class="text-gray-500 reviewlike-{{ review.pk }}">
+          {{ review.like.count }}
+        </span>
         </form>
+        {% if request.user.is_authenticated %}
+        <form class="review-edit-form" id="review-edit-form-{{ review.pk }}" data-place-id="{{ place.pk }}" data-review-id="{{ review.pk }}" hidden>
+          {% csrf_token %}
+          <div class="mb-8">
+            <label for="reviewContent-{{review.pk}}" class="block text-sm font-medium leading-6 text-gray-900">내용</label>
+            <div class="mt-2">
+              <input type="text" name="content" id="review-content-{{review.pk}}" class="block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-primary-800 sm:text-sm sm:leading-6" value={{review.content}}>
+            </div>
+          </div>
+          <button type="submit" class="text-white bg-primary-700 hover:bg-primary-800 focus:ring-4 focus:ring-primary-300 font-medium rounded-lg text-sm px-4 lg:px-5 py-2 lg:py-2.5 mr-2 dark:bg-primary-600 dark:hover:bg-primary-700 focus:outline-none dark:focus:ring-primary-800 update">리뷰 수정하기</button>
+          <button type="button" class="text-white bg-gray-700 hover:bg-gray-800 focus:ring-4 focus:ring-gray-300 font-medium rounded-lg gray-sm px-4 lg:px-5 py-2 lg:py-2.5 mr-2 dark:bg-gray-600 dark:hover:bg-gray-700 focus:outline-none dark:focus:ring-gray-800 cancel" data-review-id="{{ review.pk }}">취소</button>
+        </form>
+        {% endif %}
       </div>
       {% empty %}
       <div class="mb-12">
@@ -254,18 +262,25 @@
         <div class="h-56 map-wrapper mt-6">
           <div id="map-right" class="h-full"></div>
         </div>
-        <form action="{% url 'places:bookmark' place.pk %}" method="POST">
-          {% csrf_token %}
-          {% if request.user in place.bookmark.all %}
-          <button type="submit" class="flex items-center justify-center gap-2 text-gray-800 dark:text-white hover:bg-gray-50 font-medium text-base px-4 lg:px-5 py-2 lg:py-2.5 mr-2 dark:hover:bg-gray-700 focus:outline-none dark:focus:ring-gray-800 w-full border-t-2 border-gray-100">
-            <i class="fa-solid fa-bookmark text-primary-700"></i>
-            <span>장소 저장하기 취소</span>
-          </button>
+        <form id="place-bookmarkform" data-place-id="{{ place.pk }}">
+          {% if request.user.is_authenticated %}
+            {% csrf_token %}
+            {% if request.user in place.bookmark.all %}
+            <button type="submit" class="flex items-center justify-center gap-2 text-gray-800 dark:text-white hover:bg-gray-50 font-medium text-base px-4 lg:px-5 py-2 lg:py-2.5 mr-2 dark:hover:bg-gray-700 focus:outline-none dark:focus:ring-gray-800 w-full border-t-2 border-gray-100">
+              <i class="fa-solid fa-bookmark text-primary-700"></i>
+              <span>장소 저장하기 취소</span>
+            </button>
+            {% else %}
+            <button type="submit" class="flex items-center justify-center gap-2 text-gray-800 dark:text-white hover:bg-gray-50 font-medium text-base px-4 lg:px-5 py-2 lg:py-2.5 mr-2 dark:hover:bg-gray-700 focus:outline-none dark:focus:ring-gray-800 w-full border-t-2 border-gray-100">
+              <i class="fa-regular fa-bookmark text-gray-500"></i>
+              <span>장소 저장하기</span>
+            </button>
+            {% endif %}
           {% else %}
-          <button type="submit" class="flex items-center justify-center gap-2 text-gray-800 dark:text-white hover:bg-gray-50 font-medium text-base px-4 lg:px-5 py-2 lg:py-2.5 mr-2 dark:hover:bg-gray-700 focus:outline-none dark:focus:ring-gray-800 w-full border-t-2 border-gray-100">
+          <a href="{% url 'accounts:login' %}" class="flex items-center justify-center gap-2 text-gray-800 dark:text-white hover:bg-gray-50 font-medium text-base px-4 lg:px-5 py-2 lg:py-2.5 mr-2 dark:hover:bg-gray-700 focus:outline-none dark:focus:ring-gray-800 w-full border-t-2 border-gray-100">
             <i class="fa-regular fa-bookmark text-gray-500"></i>
             <span>장소 저장하기</span>
-          </button>
+          </a>
           {% endif %}
         </form>
       </div>
@@ -275,21 +290,31 @@
   </div>
 </div>
 <div class="lg:hidden bg-white fixed bottom-0 w-full z-10	">
-  <form action="{% url 'places:bookmark' place.pk %}" method="POST">
-    {% csrf_token %}
-    {% if request.user in place.bookmark.all %}
-    <button type="submit" class="flex items-center justify-center gap-2 text-gray-800 dark:text-white hover:bg-gray-50 font-medium text-base py-4 dark:hover:bg-gray-700 focus:outline-none dark:focus:ring-gray-800 w-full border-t-2 border-gray-100">
-      <i class="fa-solid fa-bookmark text-primary-700"></i>
-      <span>장소 저장하기 취소</span>
-    </button>
+  <form id="place-bookmarkform-small" data-place-id="{{ place.pk }}">
+    {% if request.user.is_authenticated %}
+      {% csrf_token %}
+      {% if request.user in place.bookmark.all %}
+      <button type="submit" class="flex items-center justify-center gap-2 text-gray-800 dark:text-white hover:bg-gray-50 font-medium text-base py-4 dark:hover:bg-gray-700 focus:outline-none dark:focus:ring-gray-800 w-full border-t-2 border-gray-100">
+        <i class="fa-solid fa-bookmark text-primary-700"></i>
+        <span>장소 저장하기 취소</span>
+      </button>
+      {% else %}
+      <button type="submit" class="flex items-center justify-center gap-2 text-gray-800 dark:text-white hover:bg-gray-50 font-medium text-base py-4 dark:hover:bg-gray-700 focus:outline-none dark:focus:ring-gray-800 w-full border-t-2 border-gray-100">
+        <i class="fa-regular fa-bookmark text-gray-500"></i>
+        <span>장소 저장하기</span>
+      </button>
+      {% endif %}
     {% else %}
-    <button type="submit" class="flex items-center justify-center gap-2 text-gray-800 dark:text-white hover:bg-gray-50 font-medium text-base py-4 dark:hover:bg-gray-700 focus:outline-none dark:focus:ring-gray-800 w-full border-t-2 border-gray-100">
-      <i class="fa-regular fa-bookmark text-gray-500"></i>
-      <span>장소 저장하기</span>
-    </button>
+      <a href="{% url 'accounts:login' %}" class="flex items-center justify-center gap-2 text-gray-800 dark:text-white hover:bg-gray-50 font-medium text-base py-4 dark:hover:bg-gray-700 focus:outline-none dark:focus:ring-gray-800 w-full border-t-2 border-gray-100">
+        <i class="fa-regular fa-bookmark text-gray-500"></i>
+        <span>장소 저장하기</span>
+      </a>
     {% endif %}
   </form>
 </div>
+<a href="https://docs.google.com/forms/d/e/1FAIpQLSc-Xrz3-Bkvgpq49D2SwuxNUKM6TT9_WjJnhUDxmLaxDGZEyg/viewform?entry.1965459079={{place.name}}&entry.1164742955={{place.address}}" target="_blank" class="fixed right-8 bottom-16 lg:bottom-8 bg-primary-800 focus:ring-4 focus:ring-primary-300 font-medium rounded-full dark:bg-primary-600 dark:hover:bg-primary-700 focus:outline-none dark:focus:ring-primary-800 z-50">
+  <i id="question-btn" class="fa-solid fa-message text-white text-lg px-5 py-4"></i>
+</a>
 {% endblock content %}
 
 {% block js %}
@@ -418,10 +443,10 @@
     const month = dateParts[1].slice(0, -1)
     const day = dateParts[2].slice(0, -1)
     const hourMinute = dateParts[3].split(":");
-    const hour = parseInt(hourMinute[0]) + (dateParts[-1] === "오후" ? 12 : 0);
+    const hour = parseInt(hourMinute[0]) + (dateParts[4] === "오후" ? 12 : 0);
     const minute = parseInt(hourMinute[1])
     const start = new Date(year, month-1, day, hour, minute);
-    const end = new Date();    
+    const end = new Date();  
     const diff = (end - start) / 1000;
     
     const times = [
@@ -473,8 +498,189 @@
   }
 
   const drawStar = (target) => {
+    console.log(target)
     document.querySelector(`.stars span`).style.width = `${target.value * 20}%`;
   }
+  
+  
+</script>
+<script>
+  const plcebookmarkform = document.querySelector('#place-bookmarkform')
+  const plcebookmarkformSmall = document.querySelector('#place-bookmarkform-small')
+  const reviewforms = document.querySelectorAll('.review-likeform')
+  const csrftoken = document.querySelector('[name=csrfmiddlewaretoken]').value
+
+  // Place 북마크
+  plcebookmarkform.addEventListener('submit', function (event) {
+    event.preventDefault()
+    const placeId = event.target.dataset.placeId
+    axios({
+      method: 'post',
+      url: `/places/${placeId}/bookmark/`,
+      headers: {'X-CSRFToken': csrftoken},
+    })
+      .then((response) => {
+        const isBookmarked = response.data.bookmarked
+        const likeBtn = document.querySelector('#place-bookmarkform > button[type=submit] > i')
+        const likeBtnText = document.querySelector('#place-bookmarkform > button[type=submit] > span')
+        const likeBtnSmall = document.querySelector('#place-bookmarkform-small > button[type=submit] > i')
+        const likeBtnTextSmall = document.querySelector('#place-bookmarkform-small > button[type=submit] > span')
+        
+        if (isBookmarked === true) {
+          likeBtn.className = 'fa-solid fa-bookmark text-primary-700'
+          likeBtnText.innerText = '장소 저장하기 취소'
+          likeBtnSmall.className = 'fa-solid fa-bookmark text-primary-700'
+          likeBtnTextSmall.innerText = '장소 저장하기 취소'
+        } else {
+          likeBtn.className = 'fa-regular fa-bookmark text-gray-500'
+          likeBtnText.innerText = '장소 저장하기'
+          likeBtnSmall.className = 'fa-regular fa-bookmark text-gray-500'
+          likeBtnTextSmall.innerText = '장소 저장하기'
+        }      
+      })
+      .catch((error) => {
+        console.log(error.response)
+      })
+  })
+
+  // Place 북마크 Small Size
+  plcebookmarkformSmall.addEventListener('submit', function (event) {
+    event.preventDefault()
+    const placeId = event.target.dataset.placeId
+    axios({
+      method: 'post',
+      url: `/places/${placeId}/bookmark/`,
+      headers: {'X-CSRFToken': csrftoken},
+    })
+      .then((response) => {
+        const isBookmarked = response.data.bookmarked
+        const likeBtn = document.querySelector('#place-bookmarkform > button[type=submit] > i')
+        const likeBtnText = document.querySelector('#place-bookmarkform > button[type=submit] > span')
+        const likeBtnSmall = document.querySelector('#place-bookmarkform-small > button[type=submit] > i')
+        const likeBtnTextSmall = document.querySelector('#place-bookmarkform-small > button[type=submit] > span')
+        
+        if (isBookmarked === true) {
+          likeBtn.className = 'fa-solid fa-bookmark text-primary-700'
+          likeBtnText.innerText = '장소 저장하기 취소'
+          likeBtnSmall.className = 'fa-solid fa-bookmark text-primary-700'
+          likeBtnTextSmall.innerText = '장소 저장하기 취소'
+        } else {
+          likeBtn.className = 'fa-regular fa-bookmark text-gray-500'
+          likeBtnText.innerText = '장소 저장하기'
+          likeBtnSmall.className = 'fa-regular fa-bookmark text-gray-500'
+          likeBtnTextSmall.innerText = '장소 저장하기'
+        }      
+      })
+      .catch((error) => {
+        console.log(error.response)
+      })
+  })
+
+  // Review Like
+  reviewforms.forEach((reviewform) => {
+    reviewform.addEventListener('submit', function (event) {
+      event.preventDefault()
+      const reviewId = event.target.dataset.reviewId
+      const placeId = event.target.dataset.placeId
+      axios({
+        method:'post',
+        url:`/places/${placeId}/review/like/${reviewId}/`,
+        headers: {'X-CSRFToken': csrftoken},
+      })
+        .then((response) => {
+          const isLiked = response.data.is_liked
+          const commentLikesCountTag = document.querySelector(`.reviewlike-${reviewId}`)
+          const commentLikesCountData = response.data.likes_count
+          const likeBtn = document.querySelector(`#reviewlike-${reviewId} > button[type=submit] > i`)
+          
+          if (isLiked) {
+            likeBtn.className = 'fa-solid fa-heart text-primary-700'
+          } else {
+            likeBtn.className = 'fa-regular fa-heart text-gray-500'
+          }
+          commentLikesCountTag.textContent = commentLikesCountData
+        })
+        .catch((error) => {
+          console.log(error.response)
+        })
+    })
+
+  })
+
+
+  // 댓글 수정
+  const reviewUpdates = document.querySelectorAll('.review-edit-btn')
+
+  reviewUpdates.forEach((review) => {
+    review.addEventListener('click', (event) => {
+      const reviewId = event.target.dataset.reviewId
+      const reviewUpdateDiv = document.querySelector(`#review-edit-form-${ reviewId }`)
+      reviewUpdateDiv.hidden = false
+      const parentReview = event.target.parentElement.parentElement.parentElement.parentElement.parentElement.parentElement
+      const originalContent = parentReview.querySelector(`#reviewContent-${reviewId}`).innerText
+      const reviewModal = parentReview.querySelector(`#reviewUser-${reviewId}`).querySelector('#review-more-modal')
+      const reviewContent = parentReview.querySelector(`#reviewContent-${reviewId}`)
+      const reviewContentField = parentReview.querySelector(`#review-content-${reviewId}`)
+      const reviewLike = parentReview.querySelector(`#reviewlike-${reviewId}`)
+      reviewModal.style.display = 'none'
+      reviewContent.hidden = true
+      reviewContentField.value = originalContent
+      reviewLike.hidden = true
+   
+    })
+  })
+
+  const reviewUpdateConfirms = document.querySelectorAll('.review-edit-form')
+    reviewUpdateConfirms.forEach((updateBtn) => {
+      updateBtn.addEventListener('submit', (event) => {
+        event.preventDefault()
+        const placeId = event.target.dataset.placeId
+        const reviewId = event.target.dataset.reviewId
+        const parentReview = event.target.parentElement.parentElement
+        const data = {
+          content: document.querySelector(`#review-edit-form-${reviewId} input[name="content"]`).value,
+        }
+        axios({
+          method:'post',
+          url:`/places/${placeId}/review/update/${reviewId}/`,
+          headers: {'X-CSRFToken': csrftoken,},
+          data: JSON.stringify(data),
+        })
+          .then((response) => {
+            if (window.confirm('댓글 수정하시겠습니까?')) {
+              updateBtn.hidden = true              
+              const reviewModal = parentReview.querySelector(`#reviewUser-${reviewId}`).querySelector('#review-more-modal')
+              const reviewContent = parentReview.querySelector(`#reviewContent-${reviewId}`)
+              const reviewLike = parentReview.querySelector(`#reviewlike-${reviewId}`)
+              reviewModal.removeAttribute('style')
+              reviewContent.hidden = false
+              reviewLike.hidden = false
+              reviewContent.textContent = data['content']
+
+            }
+          })
+          .catch((error) => {
+            console.log(error.response)
+          })
+      })
+    })
+
+  const reviewUpdateCancels = document.querySelectorAll('.review-edit-form>.cancel')
+  reviewUpdateCancels.forEach((cancelBtn) => {
+    cancelBtn.addEventListener('click', (event) => {
+      const reviewId = event.target.dataset.reviewId
+      const reviewUpdateForm = document.querySelector(`#review-edit-form-${reviewId}`)
+      
+      reviewUpdateForm.hidden = true
+      const parentReview = event.target.parentElement.parentElement
+      const reviewModal = parentReview.querySelector(`#reviewUser-${reviewId}`).querySelector('#review-more-modal')
+      const reviewContent = parentReview.querySelector(`#reviewContent-${reviewId}`)
+      const reviewLike = parentReview.querySelector(`#reviewlike-${reviewId}`)
+      reviewModal.removeAttribute('style')
+      reviewContent.hidden = false
+      reviewLike.hidden = false
+    })
+  })
   
 </script>
 {% endblock js %}

@@ -2,60 +2,20 @@
 
 {% block content %}
 
-<div class="flex justify-center pt-4">
-    <div class="w-full max-w-sm bg-white border border-gray-200 rounded-lg shadow dark:bg-gray-800 dark:border-gray-700">
-      
-        <div class="flex justify-end px-4 pt-4">
-          {% if  user == person %}
-            <button id="dropdownButton2" data-dropdown-toggle="dropdown2" class="inline-block text-gray-500 dark:text-gray-400 hover:bg-gray-100 dark:hover:bg-gray-700 focus:ring-4 focus:outline-none focus:ring-gray-200 dark:focus:ring-gray-700 rounded-lg text-sm p-1.5" type="button">
-                <span class="sr-only">Open dropdown</span>
-                <svg class="w-6 h-6" aria-hidden="true" fill="currentColor" viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg"><path d="M6 10a2 2 0 11-4 0 2 2 0 014 0zM12 10a2 2 0 11-4 0 2 2 0 014 0zM16 12a2 2 0 100-4 2 2 0 000 4z"></path></svg>
-            </button>
-            <!-- Dropdown menu -->
-            <div id="dropdown2" class="z-10 hidden text-base list-none bg-white divide-y divide-gray-100 rounded-lg shadow w-44 dark:bg-gray-700">
-                <ul class="py-2" aria-labelledby="dropdownButton2">
-                <li>
-                    <a href="#" class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 dark:hover:bg-gray-600 dark:text-gray-200 dark:hover:text-white">사진 편집</a>
-                </li>
-                <li>
-                    <a href="{% url 'accounts:password' %}" class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 dark:hover:bg-gray-600 dark:text-gray-200 dark:hover:text-white">비밀번호 변경</a>
-                </li>
-                <li>
-                    <a href="{% url 'accounts:delete' %}" class="block px-4 py-2 text-sm text-red-600 hover:bg-gray-100 dark:hover:bg-gray-600 dark:text-gray-200 dark:hover:text-white">회원 탈퇴</a>
-                </li>
-                </ul>
-            </div>
-            {% else %}
-            {% endif %}
-        </div>
-        <div class="flex flex-col items-center pb-10">
-            <!-- 사진이 없으면 기본사진 사진이 있으면 해당 사진 출력 -->
-            {% if  false %}
-            <img class="w-24 h-24 mb-3 rounded-full shadow-lg" src="#" alt="image"/>
-            {% else %}
-            <svg class="w-24 h-24 mb-3 rounded-full shadow-lg"  fill="currentColor" viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg"><path fill-rule="evenodd" d="M10 9a3 3 0 100-6 3 3 0 000 6zm-7 9a7 7 0 1114 0H3z" clip-rule="evenodd"></path></svg>
 
-            {% endif %}
+{% include 'accounts/profile_box.html' %}
 
-            <h5 class="mb-1 text-xl font-medium text-gray-900 dark:text-white">{{ person.username }}</h5>
-            {% comment %} <div class="flex mt-4 space-x-3 md:mt-6">
-                <a href="#" class="inline-flex items-center px-4 py-2 text-sm font-medium text-center text-white bg-blue-700 rounded-lg hover:bg-blue-800 focus:ring-4 focus:outline-none focus:ring-blue-300 dark:bg-blue-600 dark:hover:bg-blue-700 dark:focus:ring-blue-800">비밀번호 변경</a>
-                <a href="#" class="inline-flex items-center px-4 py-2 text-sm font-medium text-center text-red-800 bg-red border border-red-300 rounded-lg hover:bg-red-100 focus:ring-4 focus:outline-none focus:ring-red-200 dark:bg-red-800 dark:text-red dark:border-red-600 dark:hover:bg-red-700 dark:hover:border-red-700 dark:focus:ring-red-700">회원 탈퇴</a>
-            </div> {% endcomment %}
-        </div>
-    </div>
-</div>
 
 <div class="w-full max-w-screen-xl mx-auto p-4 md:py-8">
     <hr class="my-6 border-gray-200 sm:mx-auto dark:border-gray-700 lg:my-8" />
     <div class="w-full bg-white border border-gray-200 rounded-lg shadow dark:bg-gray-800 dark:border-gray-700">
         <div class="sm:hidden">
-            <label for="tabs" class="sr-only">Select tab</label>
-            <select id="tabs" class="bg-gray-50 border-0 border-b border-gray-200 text-gray-900 text-sm rounded-t-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500">
-                <option>내가 쓴 리뷰</option>
-                <option>북마크</option>
-                <option>좋아요 한 리뷰</option>
-            </select>
+          <label for="tabs" class="sr-only">Select tab</label>
+          <select id="tabs" class="bg-gray-50 border-0 border-b border-gray-200 text-gray-900 text-sm rounded-t-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500">
+              <option>내가 쓴 리뷰</option>
+              <option>북마크</option>
+              <option>좋아요 한 리뷰</option>
+          </select>
         </div>
         <ul class="hidden text-sm font-medium text-center text-gray-500 divide-x divide-gray-200 rounded-lg sm:flex dark:divide-gray-600 dark:text-gray-400" id="fullWidthTab" data-tabs-toggle="#fullWidthTabContent" role="tablist">
             <li class="w-full">

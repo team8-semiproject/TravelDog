@@ -1,30 +1,22 @@
-# imports
-from django.shortcuts import render, redirect
+from django.contrib.auth import get_user_model, update_session_auth_hash
+from django.contrib.auth import (
+    login as auth_login,
+    logout as auth_logout,
+)
+from django.contrib.auth.decorators import login_required
 from django.shortcuts import redirect, render, get_list_or_404, get_object_or_404
 from places.views import Place, Photo, Review
 from django.core.paginator import Paginator
 from django.conf import settings
-
 from .forms import (
     CustomAuthenticationForm as AuthenticationForm, 
     CustomPasswordChangeForm as PasswordChangeForm,
     CustomUserChangeForm as UserChangeForm,
     CustomUserCreationForm as UserCreationForm,
 )
-from django.contrib.auth import (
-    login as auth_login,
-    logout as auth_logout,
-)
-from django.contrib.auth import get_user_model, update_session_auth_hash
 
-from django.contrib.auth.decorators import login_required
-
-from django.http import JsonResponse
-
-# Create your views here.
 
 def signup(request):
-
     if request.method == "POST":
         print("request", request.POST)
         form = UserCreationForm(data=request.POST)
@@ -32,7 +24,6 @@ def signup(request):
             user = form.save()
             auth_login(request, user)
             return redirect('places:index')
-            # return redirect('places:places-list')
     else:
         form = UserCreationForm()
     context = {
@@ -47,7 +38,6 @@ def login(request):
         if form.is_valid():
             auth_login(request, form.get_user())
             return redirect('places:index')
-            # return redirect('places:places-list')
     else:
         form = AuthenticationForm()
     context = {
@@ -60,26 +50,27 @@ def login(request):
 def logout(request):
     auth_logout(request)
     return redirect('places:index')
-    # return redirect('places:places-list')
 
 
 def profile(request, username):
     
     person = get_user_model().objects.get(username = username)
+    
+    // for 내가 쓴 리뷰
     my_reviews = Review.objects.filter(user=person.pk)
     page1 = request.GET.get('page', '1')
     per_page1 = 8
     paginator1 = Paginator(my_reviews, per_page1)
     page_object1 = paginator1.get_page(page1)
-
-
+    
+    // for 북마크
     bookmark_places = person.bookmarked_places.all()
     page2 = request.GET.get('page', '1')
     per_page2 = 12
     paginator2 = Paginator(bookmark_places, per_page2)
     page_object2 = paginator2.get_page(page2)
-
-
+    
+    // for 좋아요한 리뷰
     reviews_like = person.like_reviews.all()
     print('like_reviews',reviews_like)
     page3 = request.GET.get('page', '1')
@@ -96,45 +87,16 @@ def profile(request, username):
         'range2': ['1', '2', '3', '4', '5'],
         'range3': ['1', '2', '3', '4', '5'],
     }
-    return render(request, 'accounts/profile.html', context)
-
-    #     context = {
-    #         'place': place,
-    #         'reviews': page_object,
-    #         'range': ['1', '2', '3', '4', '5'],
-    #         'MAP_API_KEY': settings.MAP_API_KEY,
-    #         'REST_API_KEY': settings.REST_API_KEY,
-    #         'num_range': range(1,6),
-    #     }
-    #     return render(request, 'places/detail.html', context)
-
-
-    # def index(request):
-    # places = Place.objects.all()
-    # page = request.GET.get('page', '1')
-    # per_page = 16
-    # paginator = Paginator(places, per_page)
-    # page_object = paginator.get_page(page)
-    # context = {
-    #     'places': page_object,
-    #     'range': ['1', '2', '3', '4', '5'],
-    # }
-    # return render(request, 'places/index.html', context)
-
-@login_required
-def update(request):
-    if request.method == 'POST':
-        form = UserChangeForm(request.POST, instance=request.user)
-        if form.is_valid():
-            form.save()
-            return redirect('accounts:profile', request.user.username)
-    else:
+    
+    // for update_profile modal
+    if person==request.user:
         form = UserChangeForm(instance=request.user)
-    context = {
-        'form': form,
-    }
-    return render(request, 'accounts/update.html', context)
+    else:
+        form = UserChangeForm()
+        
+    context['form'] = form
 
+    return render(request, 'accounts/profile.html', context)
 
 @login_required
 def password(request):
@@ -153,8 +115,24 @@ def password(request):
     }
     return render(request, 'accounts/password.html', context)
 
-
 @login_required
 def delete(request):
     request.user.delete()
     return redirect('accounts:login')
+
+
+@login_required
+def update_picture(request):
+    user = get_user_model().objects.get(pk=request.user.pk)
+    if request.method == "POST":
+        form = UserChangeForm(instance=user, files=request.FILES)
+        if form.is_valid():
+            form.save()
+    return redirect('accounts:profile', user.username)
+
+
+@login_required
+def delete_picture(request):
+    user = get_user_model().objects.get(pk=request.user.pk)
+    user.picture.delete()
+    return redirect('accounts:profile', user.username)
