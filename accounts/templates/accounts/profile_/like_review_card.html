@@ -1,0 +1,36 @@
+
+<a href="{% url 'places:detail' review.place.pk %}" class="mx-auto my-4 rounded md:w-4/6 border border-gray-200 rounded-lg shadow hover:bg-gray-100 dark:border-gray-700 dark:bg-gray-800 dark:hover:bg-gray-700">
+  <div class="flex flex-col lg:flex-row rounded bg-gray-200">
+    <!--image area-->
+      {% with review.place.photos.all|first as photo %}
+          {% if photo %}
+          <img src="{{photo.photo.url}}" alt="{{photos.photo}}" class="h-full w-full md:rounded-none md:rounded-l-lg object-cover object-center aspect-square lg:h-full lg:w-2/6">
+          {% else %}
+          <img src="{% static 'img/default-place.jpg' %}" alt="default-place-img" class="h-full w-full object-scale-down object-center aspect-square lg:h-full lg:w-2/6">
+          {% endif %}
+      {% endwith %}
+    <!--content area-->
+      <div class="relative flex flex-col p-4 leading-normal grow-1">
+        <div class="flex flex-row">
+            {% if review.user.picture %}
+            <img class="h-6 w-6 rounded-full" src="{{ review.user.picture.url }}" alt="{{ review.user.picture }}">
+            {% else %}
+            <img class="h-6 w-6 rounded-full" src="{% static 'img/default-profile.jpg' %}" alt="default-profile-img">
+            {% endif %}
+            <p class="mx-2 text-base font-semibold leading-7 tracking-tight text-gray-900 group-hover:underline">{{review.user}}</p>
+        </div>
+        <!-- review content -->
+        <div class="flex flex-col md:h-4/6 justify-between">
+           <h5 class="text-xl font-bold text-gray-900 dark:text-white line-clamp-3">{{review.content}}</h5>
+           <!-- place name -->
+           <p class="font-normal text-gray-500 dark:text-gray-400">{{review.place.name}}</p>
+        </div>
+        <!-- like count -->
+        <div class="absolute bottom-4 flex justify-start mx-1">
+          <i class="fa-solid fa-heart">
+            <span class="text-gray-500">{{ review.like.count }}</span>
+          </i>
+        </div>
+      </div>
+  </div>
+</a>
