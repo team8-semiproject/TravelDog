@@ -1,7 +1,7 @@
 {% load static %}
 
-<a href="{% url 'places:detail' review.place.pk %}" class="mx-auto rounded md:w-4/6 bg-slate-100 border border-gray-200 rounded-lg shadow hover:bg-gray-100 dark:border-gray-700 dark:bg-gray-800 dark:hover:bg-gray-700  m-5">
-  <div class="flex flex-col lg:flex-row">
+<a href="{% url 'places:detail' review.place.pk %}" class="mx-auto my-4 rounded md:w-4/6 border border-gray-200 rounded-lg shadow hover:bg-gray-100 dark:border-gray-700 dark:bg-gray-800 dark:hover:bg-gray-700">
+  <div class="flex flex-col lg:flex-row rounded bg-gray-200">
     <!--image area-->
       {% with review.place.photos.all|first as photo %}
           {% if photo %}

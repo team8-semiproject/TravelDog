@@ -1,7 +1,9 @@
 {% load static %}
 {% load tailwind_filters %}
-<div class="flex justify-center pt-4">
+<div class="flex justify-center pt-4 mb-8">
   <div class="w-full max-w-sm bg-white border border-gray-200 rounded-lg shadow dark:bg-gray-800 dark:border-gray-700">
+    
+    
     <div class="flex justify-end px-4 pt-4">
       <div class="flex flex-col items-center pb-10 relative">
         {% if person == user %}
@@ -42,6 +44,7 @@
         {% endif %}
       </div>
     </div>
+
     <div class="flex flex-col items-center pb-10">
       <!-- 사진이 없으면 기본사진 사진이 있으면 해당 사진 출력 -->
       {% if person.picture %}
@@ -54,10 +57,12 @@
              alt="default-profile-picutre">
       {% endif %}
     </div>
+
     <div class="flex flex-col items-center pb-10">
       <!-- 유저네임 출력 -->
       <h5 class="mb-1 text-xl font-medium text-gray-900 dark:text-white">{{ person.username }}</h5>
     </div>
+
   </div>
 </div>
 <!-- Modal toggle -->
@@ -114,7 +119,9 @@
                  value="이미지 저장">
         </input>
         <a href="{% url 'accounts:delete_picture' %}"
-           class="block px-4 py-2 text-sm text-gray-700 hover:bg-red-100 dark:hover:bg-gray-600 dark:text-gray-200 dark:hover:text-white">이미지 삭제</a>
+           class="block px-4 py-2 text-sm text-gray-700 hover:bg-red-100 dark:hover:bg-gray-600 dark:text-gray-200 dark:hover:text-white">
+          이미지 삭제
+        </a>
       </div>
     </form>
   </div>
