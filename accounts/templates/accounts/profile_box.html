@@ -1,0 +1,81 @@
+{% load static %}
+{% load tailwind_filters %}
+
+<div class="flex justify-center pt-4">
+  <div class="w-full max-w-sm bg-white border border-gray-200 rounded-lg shadow dark:bg-gray-800 dark:border-gray-700">
+    <div class="flex justify-end px-4 pt-4">
+      <div class="flex flex-col items-center pb-10 relative">
+        {% if person == user %}
+        <button id="dropdownButton" data-dropdown-toggle="dropdown" class="absolute top-0 right-0 inline-block text-gray-500 dark:text-gray-400 hover:bg-gray-100 dark:hover:bg-gray-700 focus:ring-4 focus:outline-none focus:ring-gray-200 dark:focus:ring-gray-700 rounded-lg text-sm p-1.5" type="button">
+          <span class="sr-only">Open dropdown</span>
+          <svg class="w-6 h-6" aria-hidden="true" fill="currentColor" viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg"><path d="M6 10a2 2 0 11-4 0 2 2 0 014 0zM12 10a2 2 0 11-4 0 2 2 0 014 0zM16 12a2 2 0 100-4 2 2 0 000 4z"></path></svg>
+        </button>
+        <!-- Dropdown menu -->
+        <div id="dropdown" class="z-10 hidden text-base list-none bg-white divide-y divide-gray-100 rounded-lg shadow w-44 dark:bg-gray-700">
+          <ul class="py-2" aria-labelledby="dropdownButton">
+            <li>
+              <button data-modal-target="staticModal" data-modal-toggle="staticModal" class="block px-4 py-2 text-sm text-gray-700 hover:bg-red-100 dark:hover:bg-gray-600 dark:text-gray-200 dark:hover:text-white">이미지 편집</button>
+            </li>
+            <li>
+              <a href="{% url 'accounts:password' %}" class="block px-4 py-2 text-sm text-gray-700 hover:bg-red-100 dark:hover:bg-gray-600 dark:text-gray-200 dark:hover:text-white">비밀번호 변경</a>
+            </li>
+            <li>
+              <a href="{% url 'accounts:delete' %}" class="block px-4 py-2 text-sm text-gray-700 hover:bg-red-100 dark:hover:bg-gray-600 dark:text-gray-200 dark:hover:text-white">회원 탈퇴</a>
+            </li>
+          </ul>
+        </div>
+  {% endif %}
+</div>
+    </div>
+    <div class="flex flex-col items-center pb-10">
+      <!-- 사진이 없으면 기본사진 사진이 있으면 해당 사진 출력 -->
+      {% if person.picture %}
+      <img class="w-24 h-24 rounded-full" src="{{ person.picture.url }}" alt="{{ person.picture }}">
+      {% else %}
+      <svg class="w-24 h-24 mb-3 rounded-full shadow-lg"  fill="currentColor" viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg"><path fill-rule="evenodd" d="M10 9a3 3 0 100-6 3 3 0 000 6zm-7 9a7 7 0 1114 0H3z" clip-rule="evenodd"></path></svg>
+      {% endif %}
+    </div>
+    <div class="flex flex-col items-center pb-10">
+      <!-- 유저네임 출력 --> 
+      <h5 class="mb-1 text-xl font-medium text-gray-900 dark:text-white">{{ person.username }}</h5>
+    </div>
+  </div>
+</div>
+
+<!-- Modal toggle -->
+
+<!-- Main modal -->
+<div id="staticModal" data-modal-backdrop="static" tabindex="-1" aria-hidden="true" class="fixed top-0 left-0 right-0 z-50 hidden w-full p-4 overflow-x-hidden overflow-y-auto md:inset-0 h-[calc(100%-1rem)] max-h-full">
+  <div class="relative w-full max-w-2xl max-h-full">
+    <!-- Modal content -->
+    <div class="relative bg-white rounded-lg shadow dark:bg-gray-700">
+        <!-- Modal header -->
+        <div class="flex items-start justify-between p-4 border-b rounded-t dark:border-gray-600">
+          <h3 class="text-xl font-semibold text-gray-900 dark:text-white">이미지 편집</h3>
+          <button type="button" class="text-gray-400 bg-transparent hover:bg-gray-200 hover:text-gray-900 rounded-lg text-sm p-1.5 ml-auto inline-flex items-center dark:hover:bg-gray-600 dark:hover:text-white" data-modal-hide="staticModal">
+            <svg class="w-5 h-5" fill="currentColor" viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg"><path fill-rule="evenodd" d="M4.293 4.293a1 1 0 011.414 0L10 8.586l4.293-4.293a1 1 0 111.414 1.414L11.414 10l4.293 4.293a1 1 0 01-1.414 1.414L10 11.414l-4.293 4.293a1 1 0 01-1.414-1.414L8.586 10 4.293 5.707a1 1 0 010-1.414z" clip-rule="evenodd"></path></svg>  
+          </button>
+        </div>
+        <form action="{% url 'accounts:update_picture' %}" method="POST" enctype="multipart/form-data">
+          {% csrf_token %}
+        <!-- Modal body -->
+        <div class="flex p-6">
+          <div class="p-6 space-y-6">
+            <!-- 사진이 없으면 기본 -->
+           {% if person.picture %}
+           <img class="w-24 h-24 rounded-full" src="{{ person.picture.url }}" alt="{{ person.picture }}">
+           {% else %}
+           <svg class="w-24 h-24 mb-3 rounded-full shadow-lg"  fill="currentColor" viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg"><path fill-rule="evenodd" d="M10 9a3 3 0 100-6 3 3 0 000 6zm-7 9a7 7 0 1114 0H3z" clip-rule="evenodd"></path></svg>
+           {% endif %}
+          </div>
+          <div class="p-6 space-y-6">{{ form|crispy }}</div>
+        </div>
+        <!-- Modal footer -->
+        <div class="flex justify-end items-center p-6 space-x-2 border-t border-gray-200 rounded-b dark:border-gray-600">
+          <input type="submit" data-modal-hide="staticModal" type="button" class="block px-4 py-2 text-sm text-gray-700 hover:bg-red-100 dark:hover:bg-gray-600 dark:text-gray-200 dark:hover:text-white" value="이미지 저장"></input>
+          <a href="{% url 'accounts:delete_picture' %}" class="block px-4 py-2 text-sm text-gray-700 hover:bg-red-100 dark:hover:bg-gray-600 dark:text-gray-200 dark:hover:text-white">이미지 삭제</a>
+        </div>
+      </form>
+    </div>
+  </div>
+</div>
