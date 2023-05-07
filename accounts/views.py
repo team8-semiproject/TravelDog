@@ -4,6 +4,7 @@ from django.contrib.auth import (
     logout as auth_logout,
 )
 from django.contrib.auth.decorators import login_required
+from django.db.models import Avg
 from django.shortcuts import redirect, render, get_list_or_404, get_object_or_404
 from places.views import Place, Photo, Review
 from django.core.paginator import Paginator
@@ -54,24 +55,32 @@ def logout(request):
 
 def profile(request, username):
     
-    person = get_user_model().objects.get(username = username)
+    # person = get_user_model().objects.get(username = username)
+    person = get_user_model().objects.prefetch_related('bookmarked_places', 'user_reviews', 'like_reviews').get(username=username)
     
     # for 내가 쓴 리뷰
-    my_reviews = Review.objects.filter(user=person.pk)
+    # my_reviews = Review.objects.filter(user=person.pk)
+    # my_reviews = Review.objects.prefetch_related('place', 'user', 'like').filter(user=person)
+    # my_reviews = Place.objects.filter(place_reviews__user_id=person.pk).prefetch_related('place_reviews', 'photos').distinct()
+    my_reviews = Review.objects.filter(user=person).prefetch_related('place', 'place__photos', 'like')
     # page1 = request.GET.get('page', '1')
     # per_page1 = 8
     # paginator1 = Paginator(my_reviews, per_page1)
     # page_object1 = paginator1.get_page(page1)
     
     # for 북마크
-    bookmark_places = person.bookmarked_places.all()
+    # bookmark_places = person.bookmarked_places.all()
+    bookmark_places = Place.objects.prefetch_related('bookmark', 'photos', 'place_reviews').filter(bookmark=person)
+    raw_star = bookmark_places.annotate(avg_star=Avg('place_reviews__star'))
+    stars = raw_star.values('id').annotate(avg_star=Avg('place_reviews__star'))
     # page2 = request.GET.get('page', '1')
     # per_page2 = 12
     # paginator2 = Paginator(bookmark_places, per_page2)
     # page_object2 = paginator2.get_page(page2)
     
     # for 좋아요한 리뷰
-    reviews_like = person.like_reviews.all()
+    # reviews_like = person.like_reviews.all()
+    reviews_like = Review.objects.filter(like=person).prefetch_related('place', 'user', 'like', 'place__photos')
     # page3 = request.GET.get('page', '1')
     # per_page3 = 8
     # paginator3 = Paginator(reviews_like, per_page3)
@@ -82,6 +91,7 @@ def profile(request, username):
         'my_reviews': my_reviews,
         'bookmark_places' : bookmark_places,
         'like_reviews' : reviews_like,
+        'stars': stars,
     }
     
     # for update_profile modal
