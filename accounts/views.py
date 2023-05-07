@@ -56,21 +56,21 @@ def profile(request, username):
     
     person = get_user_model().objects.get(username = username)
     
-    // for 내가 쓴 리뷰
+    # for 내가 쓴 리뷰
     my_reviews = Review.objects.filter(user=person.pk)
     page1 = request.GET.get('page', '1')
     per_page1 = 8
     paginator1 = Paginator(my_reviews, per_page1)
     page_object1 = paginator1.get_page(page1)
     
-    // for 북마크
+    # for 북마크
     bookmark_places = person.bookmarked_places.all()
     page2 = request.GET.get('page', '1')
     per_page2 = 12
     paginator2 = Paginator(bookmark_places, per_page2)
     page_object2 = paginator2.get_page(page2)
     
-    // for 좋아요한 리뷰
+    # for 좋아요한 리뷰
     reviews_like = person.like_reviews.all()
     print('like_reviews',reviews_like)
     page3 = request.GET.get('page', '1')
@@ -88,7 +88,7 @@ def profile(request, username):
         'range3': ['1', '2', '3', '4', '5'],
     }
     
-    // for update_profile modal
+    # for update_profile modal
     if person==request.user:
         form = UserChangeForm(instance=request.user)
     else:
