@@ -7,11 +7,12 @@ crispy-tailwind==0.5.0
 cycler==0.11.0
 decorator==5.1.1
 Django==3.2.18
+django-appconf==1.0.5
 django-crispy-forms==2.0
 django-extensions==3.2.1
+django-imagekit==4.1.0
 executing==1.2.0
 fonttools==4.39.3
-Image-Kit==0.0.3
 importlib-resources==5.12.0
 ipython==8.13.2
 jedi==0.18.2
@@ -22,6 +23,7 @@ numpy==1.24.3
 packaging==23.1
 parso==0.8.3
 pickleshare==0.7.5
+pilkit==2.0
 Pillow==9.5.0
 prompt-toolkit==3.0.38
 pure-eval==0.2.2
