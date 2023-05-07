@@ -6,13 +6,13 @@
       <p class="text-base mt-12 text-gray-500 text-center">리뷰가 존재하지 않습니다.</p>
     {% else %}
     {% for review in my_reviews %}
-    <a href="{% url 'places:detail' review.place.pk %}" class="bg-white border border-gray-200 rounded-lg shadow hover:bg-gray-100 dark:border-gray-700 dark:bg-gray-800 dark:hover:bg-gray-700">
+    <a href="{% url 'places:detail' review.place.pk %}" class="bg-white border border-gray-200 rounded-lg shadow hover:bg-gray-100 dark:border-gray-700 dark:bg-gray-800 dark:hover:bg-gray-700  m-5">
         <div class="flex flex-col lg:flex-row">
             {% with review.place.photos.all|first as photo %}
             {% if photo %}
-            <img src="{{photo.photo.url}}" alt="{{photos.photo}}" class="h-full w-full object-cover object-center lg:h-full lg:w-2/6">
+            <img src="{{photo.photo.url}}" alt="{{photos.photo}}" class="h-full w-full object-cover object-center aspect-square lg:h-full lg:w-2/6">
             {% else %}
-            <img src="{% static 'img/default-place.jpg' %}" alt="default-place-img" class="h-full w-full object-cover object-center lg:h-full lg:w-2/6">
+            <img src="{% static 'img/default-place.jpg' %}" alt="default-place-img" class="h-full w-full object-scale-down object-center aspect-square lg:h-full lg:w-2/6">
             {% endif %}
             {% endwith %}
     
@@ -78,7 +78,6 @@
         {% endif %}
     </ul>
     </nav>
-
 </div>
 
 

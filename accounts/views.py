@@ -74,18 +74,27 @@ def profile(request, username):
 
 
     bookmark_places = person.bookmarked_places.all()
-    print('bookmark_places',bookmark_places)
     page2 = request.GET.get('page', '1')
     per_page2 = 12
     paginator2 = Paginator(bookmark_places, per_page2)
     page_object2 = paginator2.get_page(page2)
 
+
+    reviews_like = person.like_reviews.all()
+    print('like_reviews',reviews_like)
+    page3 = request.GET.get('page', '1')
+    per_page3 = 8
+    paginator3 = Paginator(reviews_like, per_page3)
+    page_object3 = paginator3.get_page(page3)
+
     context = {
         'person': person,
         'my_reviews': page_object1,
         'bookmark_places' : page_object2,
+        'like_reviews' : page_object3,
         'range1': ['1', '2', '3', '4', '5'],
         'range2': ['1', '2', '3', '4', '5'],
+        'range3': ['1', '2', '3', '4', '5'],
     }
     return render(request, 'accounts/profile.html', context)
 

@@ -1,14 +1,84 @@
 {% load static %}
 
 
-<div class="hidden p-4 bg-white rounded-lg md:p-8 dark:bg-gray-800 flex justify-center" id="faq" role="tabpanel" aria-labelledby="faq-tab">
-    <div id="accordion-flush" data-accordion="collapse" data-active-classes="bg-white dark:bg-gray-800 text-gray-900 dark:text-white" data-inactive-classes="text-gray-500 dark:text-gray-400">
-        <a href="#" class="flex flex-col items-center bg-white border border-gray-200 rounded-lg shadow md:flex-row md:max-w-xl hover:bg-gray-100 dark:border-gray-700 dark:bg-gray-800 dark:hover:bg-gray-700">
-            <img class="object-cover w-full rounded-t-lg h-96 md:h-auto md:w-48 md:rounded-none md:rounded-l-lg" src="/docs/images/blog/image-4.jpg" alt="">
-            <div class="flex flex-col justify-between p-4 leading-normal">
-                <h5 class="mb-2 text-2xl font-bold tracking-tight text-gray-900 dark:text-white">Noteworthy technology acquisitions 2021</h5>
-                <p class="mb-3 font-normal text-gray-700 dark:text-gray-400">Here are the biggest enterprise technology acquisitions of 2021 so far, in reverse chronological order.</p>
+<div class="hidden p-4 bg-white rounded-lg lg:p-8 dark:bg-gray-800 flex justify-center flex-col w-full" id="faq" role="tabpanel" aria-labelledby="faq-tab">
+    {% if not like_reviews %}
+      <p class="text-base mt-12 text-gray-500 text-center">리뷰가 존재하지 않습니다.</p>
+    {% else %}
+    {% for review in like_reviews %}
+    <a href="{% url 'places:detail' review.place.pk %}" class="bg-white border border-gray-200 rounded-lg shadow hover:bg-gray-100 dark:border-gray-700 dark:bg-gray-800 dark:hover:bg-gray-700  m-5">
+        <div class="flex flex-col lg:flex-row">
+            {% with review.place.photos.all|first as photo %}
+            {% if photo %}
+            <img src="{{photo.photo.url}}" alt="{{photos.photo}}" class="h-full w-full object-cover object-center aspect-square lg:h-full lg:w-2/6">
+            {% else %}
+            <img src="{% static 'img/default-place.jpg' %}" alt="default-place-img" class="h-full w-full object-scale-down object-center aspect-square lg:h-full lg:w-2/6">
+            {% endif %}
+            {% endwith %}
+    
+            <div class="flex flex-col justify-between p-4 leading-normal grow-1">
+                <h5 class="mb-2 text-2xl font-bold text-gray-900 dark:text-white">{{review.content}}</h5>
+                <p class="mb-3 font-normal text-gray-700 dark:text-gray-400">{{review.place.name}}</p>
+                <div class="flex justify-start mx-1">
+                    <i class="fa-solid fa-heart">
+                       
+                        <span class="text-gray-500">{{ review.like.count }}</span>
+                        
+                    </i>
+                </div>
             </div>
+        </div>
+    </a>
+    {% endfor %}
+    {% endif %}
+    <nav aria-label="Page navigation example" class="flex justify-center mt-20">
+    <ul class="inline-flex items-center -space-x-px">
+        {% if like_reviews.has_previous %}
+        <li>
+        <a href="?page={{ like_reviews.previous_page_number }}" class="block px-3 py-2 ml-0 leading-tight text-gray-500 bg-white border border-gray-300 rounded-l-lg hover:bg-gray-100 hover:text-gray-700 dark:bg-gray-800 dark:border-gray-700 dark:text-gray-400 dark:hover:bg-gray-700 dark:hover:text-white">
+            <span class="sr-only">이전</span>
+            <svg aria-hidden="true" class="w-5 h-5" fill="currentColor" viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg"><path fill-rule="evenodd" d="M12.707 5.293a1 1 0 010 1.414L9.414 10l3.293 3.293a1 1 0 01-1.414 1.414l-4-4a1 1 0 010-1.414l4-4a1 1 0 011.414 0z" clip-rule="evenodd"></path></svg>
         </a>
-    </div>
+        </li>
+        {% else %}
+        <li>
+        <a href="" class="block px-3 py-2 ml-0 leading-tight text-gray-500 bg-white border border-gray-300 rounded-l-lg hover:bg-gray-100 hover:text-gray-700 dark:bg-gray-800 dark:border-gray-700 dark:text-gray-400 dark:hover:bg-gray-700 dark:hover:text-white disabled">
+            <span class="sr-only">이전</span>
+            <svg aria-hidden="true" class="w-5 h-5" fill="currentColor" viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg"><path fill-rule="evenodd" d="M12.707 5.293a1 1 0 010 1.414L9.414 10l3.293 3.293a1 1 0 01-1.414 1.414l-4-4a1 1 0 010-1.414l4-4a1 1 0 011.414 0z" clip-rule="evenodd"></path></svg>
+        </a>
+        </li>
+        {% endif %}
+        {% for page_number in like_reviews.paginator.page_range %}
+        {% if page_number >= like_reviews.number|add:-5 and page_number <= like_reviews.number|add:5 %}
+            {% if page_number == like_reviews.number %}
+            <li>
+                <a href="?page={{ page_number }}" aria-current="page" class="z-10 px-3 py-2 leading-tight text-blue-600 border border-blue-300 bg-blue-50 hover:bg-blue-100 hover:text-blue-700 dark:border-gray-700 dark:bg-gray-700 dark:text-white">{{ page_number }}</a>
+            </li>
+            {% else %}
+            <li>
+                <a href="?page={{ page_number }}" class="px-3 py-2 leading-tight text-gray-500 bg-white border border-gray-300 hover:bg-gray-100 hover:text-gray-700 dark:bg-gray-800 dark:border-gray-700 dark:text-gray-400 dark:hover:bg-gray-700 dark:hover:text-white">{{ page_number }}</a>
+            </li>
+            {% endif %}
+        {% endif %}
+        {% endfor %}
+        {% if like_reviews.has_next %}
+        <li>
+            <a href="?page={{ like_reviews.next_page_number }}" class="block px-3 py-2 leading-tight text-gray-500 bg-white border border-gray-300 rounded-r-lg hover:bg-gray-100 hover:text-gray-700 dark:bg-gray-800 dark:border-gray-700 dark:text-gray-400 dark:hover:bg-gray-700 dark:hover:text-white">
+            <span class="sr-only">다음</span>
+            <svg aria-hidden="true" class="w-5 h-5" fill="currentColor" viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg"><path fill-rule="evenodd" d="M7.293 14.707a1 1 0 010-1.414L10.586 10 7.293 6.707a1 1 0 011.414-1.414l4 4a1 1 0 010 1.414l-4 4a1 1 0 01-1.414 0z" clip-rule="evenodd"></path></svg>
+            </a>
+        </li>
+        {% else %}
+        <li>
+            <a href="" tabindex="-1" aria-disabled="true" class="block px-3 py-2 leading-tight text-gray-500 bg-white border border-gray-300 rounded-r-lg hover:bg-gray-100 hover:text-gray-700 dark:bg-gray-800 dark:border-gray-700 dark:text-gray-400 dark:hover:bg-gray-700 dark:hover:text-white disabled">
+            <span class="sr-only">다음</span>
+            <svg aria-hidden="true" class="w-5 h-5" fill="currentColor" viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg"><path fill-rule="evenodd" d="M7.293 14.707a1 1 0 010-1.414L10.586 10 7.293 6.707a1 1 0 011.414-1.414l4 4a1 1 0 010 1.414l-4 4a1 1 0 01-1.414 0z" clip-rule="evenodd"></path></svg>
+            </a>
+        </li>
+        {% endif %}
+    </ul>
+    </nav>
 </div>
+
+
+
