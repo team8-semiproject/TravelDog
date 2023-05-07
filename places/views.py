@@ -17,9 +17,11 @@ def index_redirect(request):
 
 
 def index(request):
+
     places = Place.objects.prefetch_related('photos', 'place_reviews', 'bookmark').all()
     raw_star = Review.objects.annotate(avg_star=Avg('star'))
     stars = raw_star.values('place').annotate(avg_star=Avg('star'))
+
     page = request.GET.get('page', '1')
     per_page = 16
     paginator = Paginator(places, per_page)
