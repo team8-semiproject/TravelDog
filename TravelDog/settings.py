@@ -33,7 +33,7 @@ REST_API_KEY = os.getenv('REST_API_KEY')
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = []
+ALLOWED_HOSTS = ['port-0-traveldog-5x7y2mlhdlhjsz.sel4.cloudtype.app']
 
 
 # Application definition
