@@ -4,36 +4,33 @@
 {% block content %}
 {% if place.photos.all|length > 1 %}
 <div id="default-carousel" class="relative w-full" data-carousel="slide">
-  <!-- Carousel wrapper -->
   <div class="relative h-56 overflow-hidden md:h-96">
     {% for photo in place.photos.all %}
-    <div class="hidden duration-700 ease-in-out" data-carousel-item>
-      <img src="{{photo.photo.url}}" class="absolute block w-full -translate-x-1/2 -translate-y-1/2 top-1/2 left-1/2" alt="{{photo.photo}}">
-    </div>
+      <div class="hidden duration-700 ease-in-out" data-carousel-item>
+        <img src="{{ photo.photo.url }}" class="absolute block w-full -translate-x-1/2 -translate-y-1/2 top-1/2 left-1/2" alt="{{ photo.photo }}">
+      </div>
     {% endfor %}
   </div>
-  <!-- Slider indicators -->
   <div class="absolute z-30 flex space-x-3 -translate-x-1/2 bottom-5 left-1/2">
-      {% if place.photos.all %}
+    {% if place.photos.all %}
       {% for photo in place.photos.all %}
-      <button type="button" class="w-3 h-3 rounded-full" aria-current="false" aria-label="Slide {{ forloop.counter }}" data-carousel-slide-to="{{ forloop.counter|add:-1 }}"></button>
+        <button type="button" class="w-3 h-3 rounded-full" aria-current="false" aria-label="Slide {{ forloop.counter }}" data-carousel-slide-to="{{ forloop.counter|add:-1 }}"></button>
       {% endfor %}
-      {% else %}
+    {% else %}
       <button type="button" class="w-3 h-3 rounded-full" aria-current="false" aria-label="Slide 1" data-carousel-slide-to="0"></button>
-      {% endif %}
+    {% endif %}
   </div>
-  <!-- Slider controls -->
   <button type="button" class="absolute top-0 left-0 z-30 flex items-center justify-center h-full px-4 cursor-pointer group focus:outline-none" data-carousel-prev>
-      <span class="inline-flex items-center justify-center w-8 h-8 rounded-full sm:w-10 sm:h-10 bg-white/30 dark:bg-gray-800/30 group-hover:bg-white/50 dark:group-hover:bg-gray-800/60 group-focus:ring-4 group-focus:ring-white dark:group-focus:ring-gray-800/70 group-focus:outline-none">
-          <svg aria-hidden="true" class="w-5 h-5 text-white sm:w-6 sm:h-6 dark:text-gray-800" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7"></path></svg>
-          <span class="sr-only">Previous</span>
-      </span>
+    <span class="inline-flex items-center justify-center w-8 h-8 rounded-full sm:w-10 sm:h-10 bg-white/30 dark:bg-gray-800/30 group-hover:bg-white/50 dark:group-hover:bg-gray-800/60 group-focus:ring-4 group-focus:ring-white dark:group-focus:ring-gray-800/70 group-focus:outline-none">
+      <svg aria-hidden="true" class="w-5 h-5 text-white sm:w-6 sm:h-6 dark:text-gray-800" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7"></path></svg>
+      <span class="sr-only">Previous</span>
+    </span>
   </button>
   <button type="button" class="absolute top-0 right-0 z-30 flex items-center justify-center h-full px-4 cursor-pointer group focus:outline-none" data-carousel-next>
-      <span class="inline-flex items-center justify-center w-8 h-8 rounded-full sm:w-10 sm:h-10 bg-white/30 dark:bg-gray-800/30 group-hover:bg-white/50 dark:group-hover:bg-gray-800/60 group-focus:ring-4 group-focus:ring-white dark:group-focus:ring-gray-800/70 group-focus:outline-none">
-          <svg aria-hidden="true" class="w-5 h-5 text-white sm:w-6 sm:h-6 dark:text-gray-800" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"></path></svg>
-          <span class="sr-only">Next</span>
-      </span>
+    <span class="inline-flex items-center justify-center w-8 h-8 rounded-full sm:w-10 sm:h-10 bg-white/30 dark:bg-gray-800/30 group-hover:bg-white/50 dark:group-hover:bg-gray-800/60 group-focus:ring-4 group-focus:ring-white dark:group-focus:ring-gray-800/70 group-focus:outline-none">
+      <svg aria-hidden="true" class="w-5 h-5 text-white sm:w-6 sm:h-6 dark:text-gray-800" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"></path></svg>
+      <span class="sr-only">Next</span>
+    </span>
   </button>
 </div>
 {% else %}
@@ -41,7 +38,7 @@
   <div class="relative h-56 overflow-hidden md:h-96">
     {% for photo in place.photos.all %}
     <div>
-      <img src="{{photo.photo.url}}" class="absolute block w-full -translate-x-1/2 -translate-y-1/2 top-1/2 left-1/2" alt="{{photo.photo}}">
+      <img src="{{ photo.photo.url }}" class="absolute block w-full -translate-x-1/2 -translate-y-1/2 top-1/2 left-1/2" alt="{{ photo.photo }}">
     </div>
     {% empty %}
     <div>
@@ -63,10 +60,10 @@
         </form>
       </div>
       {% endif %}
-      <h2 id="place-name" class="text-3xl font-bold tracking-tight text-gray-900 sm:text-4xl">{{place.name}}</h2>
+      <h2 id="place-name" class="text-3xl font-bold tracking-tight text-gray-900 sm:text-4xl">{{ place.name }}</h2>
       <div class="flex gap-2 mt-4">
         <i class="fa-solid fa-location-dot text-primary-700 mt-1"></i>
-        <p id="place-address" class="text-gray-500">{{place.address}}</p>
+        <p id="place-address" class="text-gray-500">{{ place.address }}</p>
       </div>
       {% with avg_ratings=place.avg_ratings %}
         {% if not avg_ratings.star__avg %}
@@ -81,21 +78,20 @@
         {% else %}
         <div class="flex content-center	gap-0.5 mt-4">
           {% for i in range %}
-          {% if i >= avg_ratings.star__avg|floatformat:'1' %}
+          {% if i >= avg_ratings.star__avg|floatformat:1 %}
           <i class="fa-solid fa-star text-slate-300 my-auto"></i>
           {% else %}
           <i class="fa-solid fa-star text-amber-400 my-auto"></i>
           {% endif %}
           {% endfor %}
-          <span class="text-base text-gray-500 ms-1">{{avg_ratings.star__avg|floatformat:'1'}}</span>
+          <span class="text-base text-gray-500 ms-1">{{ avg_ratings.star__avg|floatformat:1 }}</span>
         </div>
         {% endif %}
       {% endwith %}
       <div class="w-full h-56 mt-4 rounded map-wrapper lg:hidden">
         <div id="map"></div>
       </div>
-      
-      <h3 class="text-base font-bold tracking-tight text-gray-700 sm:text-lg mt-8 mb-4">리뷰({{reviews|length}})</h3>
+      <h3 class="text-base font-bold tracking-tight text-gray-700 sm:text-lg mt-8 mb-4">리뷰({{ reviews|length }})</h3>
       {% if request.user.is_authenticated %}
       <div class="mb-8">
         <form action="{% url 'places:review_create' place.pk %}" method="POST">
@@ -113,13 +109,13 @@
               <input type="text" name="content" id="content" class="block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-primary-800 sm:text-sm sm:leading-6">
             </div>
           </div>
-        <button type="submit" class="text-white bg-primary-700 hover:bg-primary-800 focus:ring-4 focus:ring-primary-300 font-medium rounded-lg text-sm px-4 lg:px-5 py-2 lg:py-2.5 mr-2 dark:bg-primary-600 dark:hover:bg-primary-700 focus:outline-none dark:focus:ring-primary-800">리뷰 올리기</button>
+          <button type="submit" class="text-white bg-primary-700 hover:bg-primary-800 focus:ring-4 focus:ring-primary-300 font-medium rounded-lg text-sm px-4 lg:px-5 py-2 lg:py-2.5 mr-2 dark:bg-primary-600 dark:hover:bg-primary-700 focus:outline-none dark:focus:ring-primary-800">리뷰 올리기</button>
         </form>
       </div>
       {% endif %}
       {% for review in reviews %}
       <div class="mb-12">
-        <div class="flex justify-between mb-4" id="reviewUser-{{review.pk}}">
+        <div class="flex justify-between mb-4" id="reviewUser-{{ review.pk }}">
           <div class="group flex items-center gap-x-4">
             {% if review.user.picture %}
             <img class="h-12 w-12 rounded-full" src="{{ review.user.picture.url }}" alt="{{ review.user.picture }}">
@@ -127,7 +123,7 @@
             <img class="h-12 w-12 rounded-full" src="{% static 'img/default-profile.jpg' %}" alt="default-profile-img">
             {% endif %}
             <div>
-              <a href="{% url 'accounts:profile' review.user.username %}" class="text-base font-semibold leading-7 tracking-tight text-gray-900 group-hover:underline">{{review.user}}</a>
+              <a href="{% url 'accounts:profile' review.user.username %}" class="text-base font-semibold leading-7 tracking-tight text-gray-900 group-hover:underline">{{ review.user }}</a>
               <div class="flex items-center	 gap-2">
                 <div class="flex content-center	gap-0.5">
                   {% for i in num_range %}
@@ -139,7 +135,7 @@
                   {% endfor %}
                 </div>
                 <div class="text-xs leading-6 text-gray-500">|</div>
-                <time class="text-sm leading-6 text-gray-500" datetime="{{review.created_at}}">
+                <time class="text-sm leading-6 text-gray-500" datetime="{{ review.created_at }}">
               </div>
             </div>
           </div>
@@ -170,7 +166,7 @@
           </div>
           {% endif %}
         </div>
-        <p class="text-base text-gray-900 mb-4" id="reviewContent-{{review.pk}}">{{review.content}}</p>
+        <p class="text-base text-gray-900 mb-4" id="reviewContent-{{ review.pk }}">{{ review.content }}</p>
         {% if request.user.is_authenticated %}
         <form class="review-likeform" id="reviewlike-{{ review.pk }}" data-review-id="{{ review.pk }}" data-place-id="{{ place.pk }}">
           {% csrf_token %}
@@ -180,7 +176,7 @@
             <button type="submit" class="p-0"><i class="fa-regular fa-heart text-gray-500"></i></button>
           {% endif %}
         {% else %}
-            <button type="submit" class="p-0" disabled="disabled"><i class="fa-regular fa-heart text-gray-500"></i></button> 
+          <button type="submit" class="p-0" disabled="disabled"><i class="fa-regular fa-heart text-gray-500"></i></button> 
         {% endif %}
         <span class="text-gray-500 reviewlike-{{ review.pk }}">
           {{ review.like.count }}
@@ -190,9 +186,9 @@
         <form class="review-edit-form" id="review-edit-form-{{ review.pk }}" data-place-id="{{ place.pk }}" data-review-id="{{ review.pk }}" hidden>
           {% csrf_token %}
           <div class="mb-8">
-            <label for="reviewContent-{{review.pk}}" class="block text-sm font-medium leading-6 text-gray-900">내용</label>
+            <label for="reviewContent-{{ review.pk }}" class="block text-sm font-medium leading-6 text-gray-900">내용</label>
             <div class="mt-2">
-              <input type="text" name="content" id="review-content-{{review.pk}}" class="block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-primary-800 sm:text-sm sm:leading-6" value={{review.content}}>
+              <input type="text" name="content" id="review-content-{{ review.pk }}" class="block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-primary-800 sm:text-sm sm:leading-6" value={{ review.content }}>
             </div>
           </div>
           <button type="submit" class="text-white bg-primary-700 hover:bg-primary-800 focus:ring-4 focus:ring-primary-300 font-medium rounded-lg text-sm px-4 lg:px-5 py-2 lg:py-2.5 mr-2 dark:bg-primary-600 dark:hover:bg-primary-700 focus:outline-none dark:focus:ring-primary-800 update">리뷰 수정하기</button>
@@ -205,7 +201,6 @@
         <p class="text-base text-gray-500 text-center mt-8">아직 등록된 리뷰가 없어요 :(</p>
       </div>
       {% endfor %}
-
       <nav aria-label="Page navigation example" class="flex justify-center mt-20">
         <ul class="inline-flex items-center -space-x-px">
           {% if reviews.has_previous %}
@@ -253,12 +248,11 @@
           {% endif %}
         </ul>
       </nav>
-
     </div>
     <div class="hidden lg:flex flex-col relative h-full">
       <div class="sticky top-10 rounded-xl shadow-xl pt-6">
-        <h2 class="text-xl font-bold tracking-tight text-gray-900 sm:text-lg mx-2">'{{place.name}}'위치</h2>
-        <p class="text-gray-500 mt-2 mx-2">{{place.address}}</p>
+        <h2 class="text-xl font-bold tracking-tight text-gray-900 sm:text-lg mx-2">'{{ place.name }}'위치</h2>
+        <p class="text-gray-500 mt-2 mx-2">{{ place.address }}</p>
         <div class="h-56 map-wrapper mt-6">
           <div id="map-right" class="h-full"></div>
         </div>
@@ -284,7 +278,6 @@
           {% endif %}
         </form>
       </div>
- 
       <div class="grow"></div>
     </div>
   </div>
@@ -312,18 +305,17 @@
     {% endif %}
   </form>
 </div>
-<a href="https://docs.google.com/forms/d/e/1FAIpQLSc-Xrz3-Bkvgpq49D2SwuxNUKM6TT9_WjJnhUDxmLaxDGZEyg/viewform?entry.1965459079={{place.name}}&entry.1164742955={{place.address}}" target="_blank" class="fixed right-8 bottom-16 lg:bottom-8 bg-primary-800 focus:ring-4 focus:ring-primary-300 font-medium rounded-full dark:bg-primary-600 dark:hover:bg-primary-700 focus:outline-none dark:focus:ring-primary-800 z-50">
+<a href="https://docs.google.com/forms/d/e/1FAIpQLSc-Xrz3-Bkvgpq49D2SwuxNUKM6TT9_WjJnhUDxmLaxDGZEyg/viewform?entry.1965459079={{ place.name }}&entry.1164742955={{ place.address }}" target="_blank" class="fixed right-8 bottom-16 lg:bottom-8 bg-primary-800 focus:ring-4 focus:ring-primary-300 font-medium rounded-full dark:bg-primary-600 dark:hover:bg-primary-700 focus:outline-none dark:focus:ring-primary-800 z-50">
   <i id="question-btn" class="fa-solid fa-message text-white text-lg px-5 py-4"></i>
 </a>
 {% endblock content %}
-
 {% block js %}
-<script type="text/javascript" src="//dapi.kakao.com/v2/maps/sdk.js?appkey={{MAP_API_KEY}}&libraries=services"></script>
+<script type="text/javascript" src="//dapi.kakao.com/v2/maps/sdk.js?appkey={{ MAP_API_KEY }}&libraries=services"></script>
 <script>
   const container = document.getElementById('map')
   const containerRight = document.getElementById('map-right')
   const placeAddress = document.querySelector('#place-address').innerText
-  const REST_API_KEY = '{{REST_API_KEY}}'
+  const REST_API_KEY = '{{ REST_API_KEY }}'
   const headers = new Headers({'Authorization': `KakaoAK ${REST_API_KEY}`})
 
   fetch(`https://dapi.kakao.com/v2/local/search/address.json?query=${placeAddress}`, {

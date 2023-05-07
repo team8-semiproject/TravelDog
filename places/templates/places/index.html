@@ -1,22 +1,21 @@
 {% extends 'base.html' %}
 {% load static %}
-
 {% block content %}
 <section class="bg-white dark:bg-gray-900">
   <div class="py-8 px-4 mx-auto max-w-screen-xl lg:py-16 lg:px-6">
-      <div class="max-w-screen-lg text-gray-500 sm:text-lg dark:text-gray-400">
-        <div class="flex flex-col gap-4">
-          <div>
-            <h2 class="mb-4 text-4xl tracking-tight font-bold text-gray-900 dark:text-white">댕댕이와 여행하개!</h2>
-            <p class="mb-4 font-light">펫팸족을 위한 전국 반려견 동반 여행지를 추천해드려요</p>
-          </div>
-          {% if request.user.is_authenticated and request.user.is_staff %}
-          <div class="mb-4">
-            <a href="{% url 'places:create' %}" class="text-white bg-primary-700 hover:bg-primary-800 focus:ring-4 focus:ring-primary-300 font-medium rounded-lg text-sm px-4 lg:px-5 py-2 lg:py-2.5 mr-2 dark:bg-primary-600 dark:hover:bg-primary-700 focus:outline-none dark:focus:ring-primary-800">플레이스 등록하기</a>
-          </div>
-          {% endif %}
+    <div class="max-w-screen-lg text-gray-500 sm:text-lg dark:text-gray-400">
+      <div class="flex flex-col gap-4">
+        <div>
+          <h2 class="mb-4 text-4xl tracking-tight font-bold text-gray-900 dark:text-white" style="font-family: 'Happiness-Sans-Bold';">댕댕이와 여행하개!</h2>
+          <p class="mb-4 font-light" >펫팸족을 위한 전국 반려견 동반 여행지를 추천해드려요</p>
         </div>
+        {% if request.user.is_authenticated and request.user.is_staff %}
+        <div class="mb-4">
+          <a href="{% url 'places:create' %}" class="text-white bg-primary-700 hover:bg-primary-800 focus:ring-4 focus:ring-primary-300 font-medium rounded-lg text-sm px-4 lg:px-5 py-2 lg:py-2.5 mr-2 dark:bg-primary-600 dark:hover:bg-primary-700 focus:outline-none dark:focus:ring-primary-800">플레이스 등록하기</a>
+        </div>
+        {% endif %}
       </div>
+    </div>
       {% if not places %}
       <p class="text-base mt-12 text-gray-500 text-center">여행지가 존재하지 않습니다.</p>
       {% endif %}
@@ -26,7 +25,7 @@
           <div class="h-80 aspect-h-1 aspect-w-1 w-full overflow-hidden rounded-md bg-gray-200 lg:aspect-none group-hover:opacity-75 lg:h-80">            
             {% with place.photos.all|first as photo %}
             {% if photo %}
-            <img src="{{photo.photo.url}}" alt="{{photos.photo}}" class="h-full w-full object-cover object-center lg:h-full lg:w-full">
+            <img src="{{ photo.photo.url }}" alt="{{ photos.photo }}" class="h-full w-full object-cover object-center lg:h-full lg:w-full">
             {% else %}
             <img src="{% static 'img/default-place.jpg' %}" alt="default-place-img" class="h-full w-full object-cover object-center lg:h-full lg:w-full">
             {% endif %}
@@ -37,38 +36,15 @@
               <h3 class="text-xl truncate text-gray-700">
                 <a href="{% url 'places:detail' place.pk %}">
                   <span aria-hidden="true" class="absolute inset-0"></span>
-                  {{place.name}}
+                  {{ place.name }}
                 </a>
               </h3>
               <div class="flex gap-2">
                 <i class="fa-solid fa-location-dot text-primary-700 mt-1"></i>
-                <p class="text-base text-gray-500">{{place.address}}</p>
+                <p class="text-base text-gray-500">{{ place.address }}</p>
               </div>
             </div>
             <div class="flex flex-col gap-2">
-              {% comment %} {% with avg_ratings=place.avg_ratings %}
-                {% if not avg_ratings.star__avg %}
-                <div class="flex content-center	gap-0.5">
-                  <i class="fa-solid fa-star text-slate-300 my-auto"></i>
-                  <i class="fa-solid fa-star text-slate-300 my-auto"></i>
-                  <i class="fa-solid fa-star text-slate-300 my-auto"></i>
-                  <i class="fa-solid fa-star text-slate-300 my-auto"></i>
-                  <i class="fa-solid fa-star text-slate-300 my-auto"></i>
-                  <span class="text-base text-gray-500 ms-1">0.0</span>
-                </div>
-                {% else %}
-                <div class="flex content-center	gap-0.5">
-                  {% for i in range %}
-                  {% if i >= avg_ratings.star__avg|floatformat:'1' %}
-                  <i class="fa-solid fa-star text-slate-300 my-auto"></i>
-                  {% else %}
-                  <i class="fa-solid fa-star text-amber-400 my-auto"></i>
-                  {% endif %}
-                  {% endfor %}
-                  <span class="text-base text-gray-500 ms-1">{{avg_ratings.star__avg|floatformat:'1'}}</span>
-                </div>
-                {% endif %}
-              {% endwith %} {% endcomment %}
               {% for star in stars %}
                 {% if star.place == place.pk %}
                   {% if not star.avg_star %}
@@ -94,7 +70,7 @@
                   {% endif %}
                 {% endif %}
               {% endfor %}
-              <p class="text-sm text-gray-500">{{place.place_reviews.all|length}} reviews</p>
+              <p class="text-sm text-gray-500">{{ place.place_reviews.all|length }} reviews</p>
               {% if request.user in place.bookmark.all %}
               <div class="absolute right-0 bottom-0 flex items-center justify-center m-4">
                 <i class="fa-solid fa-bookmark text-primary-700 text-xl"></i>

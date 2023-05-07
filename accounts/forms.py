@@ -1,16 +1,13 @@
-
+from django import forms
+from django.contrib.auth import get_user_model
 from django.contrib.auth.forms import (
     UserCreationForm, 
     AuthenticationForm, 
     PasswordChangeForm, 
-    UsernameField,
-    ReadOnlyPasswordHashField
+    UsernameField
 )
-from django.contrib.auth import get_user_model
-from django import forms
 from imagekit.forms import  ProcessedImageField
 from imagekit.processors import Thumbnail
-from django.utils.translation import gettext, gettext_lazy as _
 
 
 class CustomUserCreationForm(UserCreationForm):
@@ -27,9 +24,13 @@ class CustomUserChangeForm(forms.ModelForm):
         format='JPEG',
         options = {'quality':100} 
     )
+
+
     class Meta:
         model = get_user_model()
         fields = ('picture',)
+ 
+ 
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
         password = self.fields.get('password')
