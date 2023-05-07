@@ -6,12 +6,8 @@
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>TravelDog</title>
-    <link rel="shortcut icon"
-          href="{% static 'favicon/favicon.png' %}"
-          type="image/x-icon">
-    <link rel="icon"
-          href="{% static 'favicon/favicon.png' %}"
-          type="image/x-icon">
+    <link rel="shortcut icon" href="{% static 'favicon/favicon.png' %}" type="image/x-icon">
+    <link rel="icon" href="{% static 'favicon/favicon.png' %}" type="image/x-icon">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" integrity="sha512-iecdLmaskl7CVkqkXNQ/ZH/XLlvWZOJyj7Yy7tcenmpD1ypASozpmT/E0iPtmFIB46ZmdtAc9eNBvH0H/ZpiBw==" crossorigin="anonymous" referrerpolicy="no-referrer" />
     <link href="https://cdnjs.cloudflare.com/ajax/libs/flowbite/1.6.5/flowbite.min.css" rel="stylesheet" />
     <link rel="stylesheet" href="{% static 'style.css' %}">
@@ -89,11 +85,11 @@
       const footer = document.querySelector('footer'); // footer 엘리먼트 선택
       const header = document.querySelector('header'); // header 엘리먼트 선택
       var viewportHeight = window.innerHeight; // 뷰포트 높이 가져오기
-      
+
       const updateVisibility = () => {
         const pageHeight = document.documentElement.scrollHeight; // 페이지 전체 높이 가져오기
         const Threshold = pageHeight - viewportHeight; // 임계값 설정 (페이지 전체 높이 - 뷰포트 높이)
-      
+
         if (window.pageYOffset > Threshold) {
           footer.style.visibility = 'hidden'; // 임계값을 넘으면 footer를 숨김
           header.style.visibility = 'hidden';
@@ -102,11 +98,9 @@
           header.style.visibility = 'visible';
         }
       };
-      
+
       window.addEventListener('scroll', updateVisibility); // 스크롤 이벤트에 updateFooterVisibility 함수 등록
       window.addEventListener('resize', updateVisibility); // 리사이즈 이벤트에 updateFooterVisibility 함수 등록
-      
-
     </script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/flowbite/1.6.5/flowbite.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
