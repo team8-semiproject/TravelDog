@@ -1,37 +1,16 @@
 {% load static %}
-<div class="hidden p-4 bg-white rounded-lg lg:p-8 dark:bg-gray-800 flex justify-center flex-col w-full"
-     id="stats"
-     role="tabpanel"
-     aria-labelledby="stats-tab">
+
+<div class="hidden p-4 bg-white rounded-lg lg:p-8 dark:bg-gray-800 flex justify-center flex-col w-full" id="stats" role="tabpanel" aria-labelledby="stats-tab">
     {% if not my_reviews %}
-        <p class="text-base mt-12 text-gray-500 text-center">리뷰가 존재하지 않습니다.</p>
+      <p class="text-base mt-12 text-gray-500 text-center">리뷰가 존재하지 않습니다.</p>
     {% else %}
-        {% for review in my_reviews %}
-            <a href="{% url 'places:detail' review.place.pk %}"
-               class="bg-white border border-gray-200 rounded-lg shadow hover:bg-gray-100 dark:border-gray-700 dark:bg-gray-800 dark:hover:bg-gray-700  m-5">
-                <div class="flex flex-col lg:flex-row">
-                    {% with review.place.photos.all|first as photo %}
-                        {% if photo %}
-                            <img src="{{ photo.photo.url }}"
-                                 alt="{{ photos.photo }}"
-                                 class="h-full w-full object-cover object-center aspect-square lg:h-full lg:w-2/6">
-                        {% else %}
-                            <img src="{% static 'img/default-place.jpg' %}"
-                                 alt="default-place-img"
-                                 class="h-full w-full object-scale-down object-center aspect-square lg:h-full lg:w-2/6">
-                        {% endif %}
-                    {% endwith %}
-                    <div class="flex flex-col justify-between p-4 leading-normal grow-1">
-                        <h5 class="mb-2 text-2xl font-bold text-gray-900 dark:text-white line-clamp-3">{{ review.content }}</h5>
-                        <p class="mb-3 font-normal text-gray-700 dark:text-gray-400">{{ review.place.name }}</p>
-                        <div class="flex justify-start mx-1">
-                            <i class="fa-solid fa-heart">
-                                <span class="text-gray-500">{{ review.like.count }}</span>
-                            </i>
-                        </div>
-                    </div>
-                </div>
-            </a>
-        {% endfor %}
+    {% for review in my_reviews %}
+
+    {% include 'accounts/review_card.html' %}
+
+    {% endfor %}
     {% endif %}
 </div>
+
+
+
