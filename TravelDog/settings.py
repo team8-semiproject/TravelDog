@@ -42,6 +42,7 @@ INSTALLED_APPS = [
     'accounts',
     'places',
     'django_extensions',
+    'imagekit',
     'crispy_forms',
     'crispy_tailwind',
     'django.contrib.admin',
