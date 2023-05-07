@@ -17,7 +17,6 @@ def index_redirect(request):
 
 
 def index(request):
-
     places = Place.objects.prefetch_related('photos', 'place_reviews', 'bookmark').all()
     raw_star = Review.objects.annotate(avg_star=Avg('star'))
     stars = raw_star.values('place').annotate(avg_star=Avg('star'))
@@ -26,12 +25,13 @@ def index(request):
     per_page = 16
     paginator = Paginator(places, per_page)
     page_object = paginator.get_page(page)
+
     context = {
         'places': page_object,
         'range': ['1', '2', '3', '4', '5'],
         'stars': stars,
     }
-    print(stars)
+
     return render(request, 'places/index.html', context)
 
 
@@ -40,6 +40,7 @@ def create(request):
         if request.method == 'POST':
             form = PlaceForm(request.POST)
             photos = request.FILES.getlist('photo')
+
             if form.is_valid():
                 place = form.save()
                 if photos:
@@ -49,10 +50,12 @@ def create(request):
         else:
             form = PlaceForm()
             photoform = PhotoForm()
+
         context = {
             'form': form,
             'photoform': photoform,
         }
+
         return render(request, 'places/create.html', context)
     return redirect('places:index')
 
