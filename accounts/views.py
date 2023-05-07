@@ -71,6 +71,7 @@ def profile(request, username):
         'like_reviews' : reviews_like,
         'stars': stars,
         'form': form,
+        'range': range(1, 6),
     }
     return render(request, 'accounts/profile.html', context)
 
