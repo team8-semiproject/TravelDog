@@ -1,13 +1,11 @@
-from django.db import models
 from django.apps import apps
 from django.contrib.auth import base_user as auth_models
 from django.contrib.auth.validators import UnicodeUsernameValidator
+from django.db import models
 from django.utils.translation import gettext_lazy as _
 from imagekit.models import ProcessedImageField
 from imagekit.processors import Thumbnail
 
-
-# Create your models here.
 
 class UserManager(auth_models.BaseUserManager):
     def create_user(self, username: str, password: str=None, is_active=False, is_admin=False):
@@ -22,6 +20,7 @@ class UserManager(auth_models.BaseUserManager):
         user.save(using=self._db)
         return user
 
+
     def create_superuser(self, username, password):
         user = self.create_user(
             username=username,
@@ -30,7 +29,8 @@ class UserManager(auth_models.BaseUserManager):
         user.is_admin = True
         user.save(using=self._db)
         return user
-    
+
+
 class User(auth_models.AbstractBaseUser):
     username_validator = UnicodeUsernameValidator()
     username = models.CharField(
@@ -60,14 +60,18 @@ class User(auth_models.AbstractBaseUser):
     USERNAME_FIELD = 'username'
     REQUIRED_FIELDS = []
 
+
     def __str__(self):
         return self.username
-    
+
+
     def has_perm(self, perm, obj=None):
         return True
 
+
     def has_module_perms(self, app_label):
         return True
+
 
     @property
     def is_staff(self):
