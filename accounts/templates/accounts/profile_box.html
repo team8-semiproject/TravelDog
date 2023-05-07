@@ -32,7 +32,7 @@
       {% if person.picture %}
       <img class="w-24 h-24 rounded-full" src="{{ person.picture.url }}" alt="{{ person.picture }}">
       {% else %}
-      <svg class="w-24 h-24 mb-3 rounded-full shadow-lg"  fill="currentColor" viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg"><path fill-rule="evenodd" d="M10 9a3 3 0 100-6 3 3 0 000 6zm-7 9a7 7 0 1114 0H3z" clip-rule="evenodd"></path></svg>
+      <img class="w-24 h-24 rounded-full" src="{% static 'img/default-profile.jpg' %}" alt="default-profile-picutre">
       {% endif %}
     </div>
     <div class="flex flex-col items-center pb-10">
@@ -65,7 +65,7 @@
            {% if person.picture %}
            <img class="w-24 h-24 rounded-full" src="{{ person.picture.url }}" alt="{{ person.picture }}">
            {% else %}
-           <svg class="w-24 h-24 mb-3 rounded-full shadow-lg"  fill="currentColor" viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg"><path fill-rule="evenodd" d="M10 9a3 3 0 100-6 3 3 0 000 6zm-7 9a7 7 0 1114 0H3z" clip-rule="evenodd"></path></svg>
+           <img class="w-24 h-24 rounded-full" src="{% static 'img/default-profile.jpg' %}" alt="default-profile-picutre">
            {% endif %}
           </div>
           <div class="p-6 space-y-6">{{ form|crispy }}</div>
