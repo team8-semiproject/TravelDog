@@ -17,7 +17,17 @@
             {% endwith %}
     
             <div class="flex flex-col justify-between p-4 leading-normal grow-1">
-                <h5 class="mb-2 text-2xl font-bold text-gray-900 dark:text-white">{{review.content}}</h5>
+                <div class="flex justify-between mb-4">
+                    <div class="group flex items-center gap-x-4">
+                        {% if review.user.picture %}
+                        <img class="h-12 w-12 rounded-full" src="{{ review.user.picture.url }}" alt="{{ review.user.picture }}">
+                        {% else %}
+                        <img class="h-12 w-12 rounded-full" src="{% static 'img/default-profile.jpg' %}" alt="default-profile-img">
+                        {% endif %}
+                        <span>{{ review.user }}</span>
+                    </div>
+                </div>
+                <h5 class="mb-2 text-2xl font-bold text-gray-900 dark:text-white line-clamp-3">{{review.content}}</h5>
                 <p class="mb-3 font-normal text-gray-700 dark:text-gray-400">{{review.place.name}}</p>
                 <div class="flex justify-start mx-1">
                     <i class="fa-solid fa-heart">

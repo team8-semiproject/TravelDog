@@ -17,8 +17,8 @@
             <div class="flex justify-center">
               <div class="flex flex-col items-center">
                 <!-- 사진이 없으면 기본사진 사진이 있으면 해당 사진 출력 -->
-                {% if person.picture %}
-                <img class="w-6 h-6 m-1 rounded-full" src="{{ person.picture.url }}" alt="{{ person.picture }}">
+                {% if user.picture %}
+                <img class="w-6 h-6 m-1 rounded-full" src="{{ user.picture.url }}" alt="{{ user.picture }}">
                 {% else %}
                 <svg class="w-6 h-6 m-1 rounded-full shadow-lg"  fill="currentColor" viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg"><path fill-rule="evenodd" d="M10 9a3 3 0 100-6 3 3 0 000 6zm-7 9a7 7 0 1114 0H3z" clip-rule="evenodd"></path></svg>
                 {% endif %}
