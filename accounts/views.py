@@ -67,16 +67,11 @@ def profile(request, username):
     
     person = get_user_model().objects.get(username = username)
     my_reviews = Review.objects.filter(user=person.pk)
-    page = request.GET.get('page', '1')
-    per_page = 8
-    paginator = Paginator(my_reviews, per_page)
-    page_object = paginator.get_page(page)
-    my_photos = []
-    for review in my_reviews:
-        place = Place.objects.get(pk=review.place.pk)
-        photo = place.photos.all()[:1]
-        my_photos.append(photo)
-    my_list = zip(my_reviews, my_photos)
+    page1 = request.GET.get('page', '1')
+    per_page1 = 8
+    paginator1 = Paginator(my_reviews, per_page1)
+    page_object1 = paginator1.get_page(page1)
+
 
     bookmark_places = person.bookmarked_places.all()
     print('bookmark_places',bookmark_places)
@@ -87,10 +82,9 @@ def profile(request, username):
 
     context = {
         'person': person,
-        'reviews': page_object,
-        'my_reviews': my_reviews,
-        'my_list' : my_list,
+        'my_reviews': page_object1,
         'bookmark_places' : page_object2,
+        'range1': ['1', '2', '3', '4', '5'],
         'range2': ['1', '2', '3', '4', '5'],
     }
     return render(request, 'accounts/profile.html', context)
